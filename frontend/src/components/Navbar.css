@@ -1,0 +1,176 @@
+/* Top Navbar */
+.navbar-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #222;
+    color: white;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    padding: 10px;
+}
+
+.navbar-top .logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Bottom Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #222;
+    color: white;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    z-index: 1000;
+    padding: 10px 0;
+}
+
+.navbar .logo-web {
+    font-size: 20px;
+    font-weight: bold;
+    position: absolute;
+    left: 20px;  /* Position logo to the left */
+}
+
+/* Nav Items */
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    padding: 5px 10px;
+    width: auto;
+    margin: 0 10px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.nav-item img {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 5px;
+    transition: transform 0.2s ease;
+}
+
+.nav-item span {
+    font-size: 14px;
+}
+
+/* Active and Hover Effects */
+.nav-item.active span {
+    font-weight: bold;
+    color: #ffcc00; /* Highlight active link */
+}
+
+.nav-item.active img {
+    transform: scale(1.1);
+}
+
+.nav-item:hover span {
+    color: #ffcc00;
+}
+
+/* Web View - Only show labels */
+@media (min-width: 769px) {
+    .navbar {
+        position: fixed;
+        top: 0;
+        bottom: auto;
+        padding: 10px 20px;
+        justify-content: space-evenly;
+    }
+
+    .navbar .logo-web {
+        position: static;
+        margin-left: 20px;
+    }
+
+    .nav-item {
+        display: flex;
+    }
+
+    .nav-item img {
+        display: none;
+    }
+
+    .nav-item span {
+        display: inline-block;
+        font-size: 16px;
+    }
+}
+
+/* Mobile View - Show icons only */
+@media (max-width: 768px) {
+    .navbar-top {
+        display: flex;
+        justify-content: center;
+        padding: 10px 20px;
+    }
+
+    .navbar-top .logo {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .navbar {
+        position: fixed;
+        bottom: 0;
+        justify-content: space-between;
+        padding: 10px 0;
+    }
+
+    .logo-web {
+        display: none;
+    }
+
+    .nav-item {
+        flex-direction: row;
+        justify-content: center;
+        padding: 10px;
+        width: 20%; /* Adjust width to prevent overflow */
+    }
+
+    .nav-item span {
+        display: none;
+    }
+
+    .nav-item img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .nav-item.active {
+        background-color: #444;  
+    }
+    
+    .nav-item.active img {
+        transform: scale(1.1);
+    }
+
+    /* Adjust login/logout button */
+    .login-logout-button {
+        padding: 10px 15px; /* Adjust padding */
+        font-size: 14px; /* Adjust font size */
+        background-color: #007bff; /* Button color */
+        color: white; /* Text color */
+        border: none; /* Remove border */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor */
+        margin-left: 10px; /* Space between button and icons */
+        margin-right: 10px; 
+        flex-shrink: 0; /* Prevent button from shrinking */
+    }
+
+    .login-logout-button:hover {
+        background-color: #0056b3; /* Darker shade on hover */
+    }
+}

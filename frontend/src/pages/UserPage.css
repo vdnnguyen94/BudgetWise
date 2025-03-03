@@ -1,0 +1,85 @@
+.user-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    padding: 20px; /* Added padding for better spacing */
+}
+
+.user-page h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.user-info {
+    text-align: center; /* Center text for user info */
+}
+
+.login-form {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px; /* Increased max-width for better usability */
+    margin: 0 auto; /* Center the form */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    padding: 12px; /* Increased padding for better touch targets */
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s; /* Smooth transition for focus */
+}
+
+input:focus {
+    border-color: #007bff; /* Change border color on focus */
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s; /* Smooth transition for hover */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    .user-page {
+        padding: 10px; /* Adjust padding for smaller screens */
+    }
+
+    .login-form {
+        width: 90%; /* Make form width responsive */
+    }
+
+    .user-page h2 {
+        font-size: 20px; /* Adjust font size for smaller screens */
+    }
+}
