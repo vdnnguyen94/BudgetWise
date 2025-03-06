@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
+import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/auth.js';
 import expenseRoutes from './routes/expenseRoutes.js';
 import budgetRoutes from './routes/budgetRoutes.js';
@@ -20,8 +21,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(cookieParser());
-
+app.use(cors());
 // Routes
+app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/budget', budgetRoutes);

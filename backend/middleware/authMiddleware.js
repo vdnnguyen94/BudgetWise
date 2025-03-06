@@ -3,6 +3,8 @@ import User from '../models/user.js';
 
 // Middleware to verify token
 export const authenticate = (req, res, next) => {
+    const authHeader = req.headers["authorization"];
+    console.log("Auth Header Received:", authHeader);
     const token = req.cookies.token || req.headers['authorization']?.split(' ')[1]; // From cookies or Authorization header
 
     if (!token) {

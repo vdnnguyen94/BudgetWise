@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './UserPage.css';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const UserPage = ({ setIsAuthenticated }) => {
     const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ const UserPage = ({ setIsAuthenticated }) => {
     const [error, setError] = useState("");
     const [isRegistering, setIsRegistering] = useState(false); // State to toggle between login and register
 
+    console.log("API_URL:", API_URL);
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -20,12 +22,14 @@ const UserPage = ({ setIsAuthenticated }) => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("https://budget-8iw9.onrender.com/api/auth/login", {
+            const response = await fetch(`${API_URL}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
             const data = await response.json();
+            console.log("Response Status:", response.status);
+            console.log("Response Data:", data);
             if (response.ok) {
                 localStorage.setItem("token", data.token);
                 setIsAuthenticated(true);
@@ -41,12 +45,14 @@ const UserPage = ({ setIsAuthenticated }) => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("https://budget-8iw9.onrender.com/api/auth/register", {
+            const response = await fetch(`${API_URL}/api/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, email, password, role }),
             });
             const data = await response.json();
+            console.log("Response Status:", response.status);
+            console.log("Response Data:", data);
             if (response.ok) {
                 setIsRegistering(false); // Switch back to login after successful registration
                 setError(""); // Clear any previous errors
@@ -60,11 +66,14 @@ const UserPage = ({ setIsAuthenticated }) => {
 
     const fetchUserInfo = async (token) => {
         try {
-            const response = await fetch("https://budget-8iw9.onrender.com/api/auth/me", {
+            console.log("Fetching user info with token:", token);
+            const response = await fetch(`${API_URL}/api/auth/me`, {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();
+            console.log("Response Status:", response.status);
+            console.log("Response Data:", data);
             if (response.ok) {
                 setUser (data);
             } else {
