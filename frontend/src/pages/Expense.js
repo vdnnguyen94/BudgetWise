@@ -185,7 +185,7 @@ const ExpensePage = () => {
             {expenses.map((expense) => (
               <tr key={expense._id}>
                 <td>{expense.categoryId ? expense.categoryId.name : "No category"}</td> 
-                <td>{expense.amount}</td>
+                <td>{"$" + parseFloat(expense.amount).toFixed(2)}</td>
                 <td>{new Date(expense.date).toLocaleDateString("en-GB")}</td> 
                 <td>{expense.description}</td>
                 <td>
