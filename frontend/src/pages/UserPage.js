@@ -28,10 +28,15 @@ const UserPage = ({ setIsAuthenticated }) => {
                 body: JSON.stringify({ email, password }),
             });
             const data = await response.json();
-            console.log("Response Status:", response.status);
-            console.log("Response Data:", data);
+            console.log("LOGIN Response Status:", response.status);
+            console.log("LOGIN Response Data:", data);
+            console.log("LOGIN DATA USER", data.user);
+            console.log("LOGIN User:", );
             if (response.ok) {
                 localStorage.setItem("token", data.token);
+                // localStorage.setItem("userId", data.user._id);
+                localStorage.setItem("userId", data.user._id);
+
                 setIsAuthenticated(true);
                 fetchUserInfo(data.token);
             } else {
@@ -58,6 +63,7 @@ const UserPage = ({ setIsAuthenticated }) => {
 
             if (response.ok) {
                 localStorage.setItem("token", data.token);
+                localStorage.setItem("userId", data.user._id);
                 setIsAuthenticated(true);
                 fetchUserInfo(data.token);
             } else {
@@ -99,6 +105,7 @@ const UserPage = ({ setIsAuthenticated }) => {
             const data = await response.json();
             console.log("Response Status:", response.status);
             console.log("Response Data:", data);
+            console.log("User ID: " ,data._id,);
             if (response.ok) {
                 setUser (data);
             } else {
