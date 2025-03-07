@@ -14,7 +14,14 @@ const expenseService = {
         });
         return response.json();
     },
-
+    updateExpense: async (userId, expenseId, updatedData) => {
+        const response = await fetch(`${API_URL}/api/expenses/${userId}/${expenseId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedData),
+        });
+        return response.json();
+    },
     deleteExpense: async (userId, expenseId) => {
         return fetch(`${API_URL}/api/expenses/${userId}/${expenseId}`, { method: "DELETE" });
     },
