@@ -1,4 +1,5 @@
 import Expense from "../models/Expense.js";
+import BudgetCategory from '../models/BudgetCategory.js';
 
 // 📌 Create Expense
 export const createExpense = async (req, res) => {
@@ -8,6 +9,11 @@ export const createExpense = async (req, res) => {
         // Ensure the date is valid
         if (new Date(date) > new Date()) {
             return res.status(400).json({ message: "Expense date cannot be in the future." });
+        }
+
+        const category = await BudgetCategory.findById(categoryId);
+        if (!category) {
+            return res.status(400).json({ message: "Invalid category ID." });
         }
 
         const expense = new Expense({
@@ -28,7 +34,7 @@ export const createExpense = async (req, res) => {
 // 📌 Get All Expenses for a User
 export const getExpenses = async (req, res) => {
     try {
-        const expenses = await Expense.find({ userId: req.params.userId });
+        const expenses = await Expense.find({ userId: req.params.userId }).populate('categoryId');;
         res.json(expenses);
     } catch (error) {
         res.status(500).json({ message: "Error fetching expenses", error: error.message });

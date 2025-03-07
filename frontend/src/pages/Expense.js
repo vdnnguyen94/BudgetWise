@@ -176,6 +176,7 @@ const ExpensePage = () => {
             <tr>
               <th>Category</th>
               <th>Amount</th>
+              <th>Date</th>
               <th>Description</th>
               <th>Actions</th>
             </tr>
@@ -183,8 +184,9 @@ const ExpensePage = () => {
           <tbody>
             {expenses.map((expense) => (
               <tr key={expense._id}>
-                <td>{expense.category ? expense.category.name : "No category"}</td>
+                <td>{expense.categoryId ? expense.categoryId.name : "No category"}</td> 
                 <td>{expense.amount}</td>
+                <td>{new Date(expense.date).toLocaleDateString("en-GB")}</td> 
                 <td>{expense.description}</td>
                 <td>
                   <button onClick={() => handleEditExpense(expense)}>Update</button>
@@ -211,7 +213,6 @@ const ExpensePage = () => {
                 {category.name}
               </option>
             ))}
-            <option value="Miscellaneous">Miscellaneous</option>
           </select>
           <input
             type="number"

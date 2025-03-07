@@ -5,24 +5,11 @@ import BudgetCategory from "../models/BudgetCategory.js";
 // 📌 Create or Update Budget
 export const createOrUpdateBudget = async (req, res) => {
     try {
-        const { totalBudget, categories } = req.body;
+        const { totalBudget } = req.body;
 
-        // Check if the Miscellaneous category already exists
-        let miscCategory = await BudgetCategory.findOne({ name: "Miscellaneous" });
-
-        if (!miscCategory) {
-            // Create Miscellaneous category if it doesn't exist
-            miscCategory = new BudgetCategory({
-                name: "Miscellaneous",
-                limit: 0, // Set the limit to 0 for Miscellaneous
-            });
-            await miscCategory.save();  // Save Miscellaneous category
-        }
-
-        // Now create or update the budget
         const budget = await Budget.findOneAndUpdate(
             { userId: req.params.userId },
-            { totalBudget, categories: [...categories, miscCategory._id] },  // Include Miscellaneous category
+            { totalBudget },
             { new: true, upsert: true }  // If budget doesn't exist, create it
         );
 

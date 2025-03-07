@@ -10,7 +10,18 @@ export const createCategory = async (req, res) => {
         if (!name || !limit) {
             return res.status(400).json({ message: "Name and limit are required." });
         }
+        
+        const existingCategories = await BudgetCategory.find({ budgetId })
+        // If no categories exist, create the Miscellaneous category
+        if (existingCategories.length === 0) {
+            const miscCategory = new BudgetCategory({
+                budgetId,
+                name: "Miscellaneous",  // Set the name as Miscellaneous
+                limit: 0,               // Set the default limit for Miscellaneous
+            });
 
+            await miscCategory.save();  // Save the Miscellaneous category
+        }
         // Create the new category
         const newCategory = new BudgetCategory({
             budgetId,
