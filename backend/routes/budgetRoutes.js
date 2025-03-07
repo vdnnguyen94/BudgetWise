@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post("/:userId", createOrUpdateBudget);
 router.get("/:userId", getBudget);
-router.delete("/:userId", deleteBudget);
+router.delete("/:budgetId", deleteBudget);
 
 export default router;

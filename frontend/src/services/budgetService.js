@@ -15,8 +15,8 @@ const budgetService = {
         return response.json();
     },
 
-    deleteBudget: async (userId) => {
-        return fetch(`${API_URL}/api/budget/${userId}`, { method: "DELETE" });
+    deleteBudget: async (budgetId) => {
+        return fetch(`${API_URL}/api/budget/${budgetId}`, { method: "DELETE" });
     },
 };
 

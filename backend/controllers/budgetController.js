@@ -2,14 +2,30 @@ import Budget from "../models/Budget.js";
 import BudgetCategory from "../models/BudgetCategory.js";
 
 // 📌 Create or Update Budget
+// 📌 Create or Update Budget
 export const createOrUpdateBudget = async (req, res) => {
     try {
         const { totalBudget, categories } = req.body;
+
+        // Check if the Miscellaneous category already exists
+        let miscCategory = await BudgetCategory.findOne({ name: "Miscellaneous" });
+
+        if (!miscCategory) {
+            // Create Miscellaneous category if it doesn't exist
+            miscCategory = new BudgetCategory({
+                name: "Miscellaneous",
+                limit: 0, // Set the limit to 0 for Miscellaneous
+            });
+            await miscCategory.save();  // Save Miscellaneous category
+        }
+
+        // Now create or update the budget
         const budget = await Budget.findOneAndUpdate(
             { userId: req.params.userId },
-            { totalBudget, categories },
-            { new: true, upsert: true }
+            { totalBudget, categories: [...categories, miscCategory._id] },  // Include Miscellaneous category
+            { new: true, upsert: true }  // If budget doesn't exist, create it
         );
+
         res.status(201).json(budget);
     } catch (error) {
         res.status(500).json({ message: "Error creating/updating budget", error: error.message });
@@ -32,11 +48,14 @@ export const getBudget = async (req, res) => {
 
 export const deleteBudget = async (req, res) => {
     try {
+        // Use the budgetId from the request params
+        const budgetId = req.params.budgetId;
+
         // Delete associated categories first
-        await BudgetCategory.deleteMany({ budgetId: req.params.budgetId });
+        await BudgetCategory.deleteMany({ budgetId: budgetId });
 
         // Now delete the budget
-        const deletedBudget = await Budget.findByIdAndDelete(req.params.budgetId);
+        const deletedBudget = await Budget.findByIdAndDelete(budgetId);
         if (!deletedBudget) {
             return res.status(404).json({ message: "Budget not found" });
         }
@@ -47,3 +66,4 @@ export const deleteBudget = async (req, res) => {
         res.status(500).json({ message: "Error deleting budget", error: error.message });
     }
 };
+

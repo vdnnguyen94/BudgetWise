@@ -141,7 +141,7 @@ const Budget = () => {
   // Delete Budget
   const handleDeleteBudget = async () => {
     try {
-      await budgetService.deleteBudget(userId);
+      await budgetService.deleteBudget(budget._id);
       setBudget(null);
       setTotalBudget("");
       setCategories([]); // Clear categories when the budget is deleted
