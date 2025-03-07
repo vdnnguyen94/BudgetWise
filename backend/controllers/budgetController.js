@@ -1,4 +1,5 @@
 import Budget from "../models/Budget.js";
+import BudgetCategory from "../models/BudgetCategory.js";
 
 // 📌 Create or Update Budget
 export const createOrUpdateBudget = async (req, res) => {
@@ -27,11 +28,22 @@ export const getBudget = async (req, res) => {
 };
 
 // 📌 Delete Budget
+
+
 export const deleteBudget = async (req, res) => {
     try {
-        await Budget.findOneAndDelete({ userId: req.params.userId });
-        res.json({ message: "Budget deleted successfully" });
+        // Delete associated categories first
+        await BudgetCategory.deleteMany({ budgetId: req.params.budgetId });
+
+        // Now delete the budget
+        const deletedBudget = await Budget.findByIdAndDelete(req.params.budgetId);
+        if (!deletedBudget) {
+            return res.status(404).json({ message: "Budget not found" });
+        }
+
+        res.status(200).json({ message: "Budget and associated categories deleted" });
     } catch (error) {
+        console.error("Error deleting budget and categories:", error);
         res.status(500).json({ message: "Error deleting budget", error: error.message });
     }
 };
