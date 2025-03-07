@@ -42,6 +42,31 @@ const UserPage = ({ setIsAuthenticated }) => {
         }
     };
 
+    const handleDemoLogin = async () => {
+        setEmail("van@gmail.com");
+        setPassword("qwe123");
+
+        try {
+            const response = await fetch(`${API_URL}/api/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: "van@gmail.com", password: "qwe123" }),
+            });
+
+            const data = await response.json();
+            console.log("Demo Login Response:", data);
+
+            if (response.ok) {
+                localStorage.setItem("token", data.token);
+                setIsAuthenticated(true);
+                fetchUserInfo(data.token);
+            } else {
+                setError(data.message || "Demo login failed!");
+            }
+        } catch (err) {
+            setError("Server error. Try again later.");
+        }
+    };
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
@@ -142,6 +167,9 @@ const UserPage = ({ setIsAuthenticated }) => {
                     </form>
                     <button onClick={() => setIsRegistering(!isRegistering)}>
                         {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
+                    </button>
+                    <button onClick={handleDemoLogin} style={{ marginTop: "10px", backgroundColor: "#28a745", color: "white" }}>
+                        Demo Sign-In
                     </button>
                 </div>
             )}
