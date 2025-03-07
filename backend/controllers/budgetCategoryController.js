@@ -3,12 +3,27 @@ import BudgetCategory from "../models/BudgetCategory.js";
 //  Create Budget Category
 export const createCategory = async (req, res) => {
     try {
-        const { budgetId, name, limit } = req.body;
-        const category = new BudgetCategory({ budgetId, name, limit });
-        await category.save();
-        res.status(201).json(category);
+        const { name, limit } = req.body;
+        const { budgetId } = req.params;
+
+        // Make sure that 'name' and 'limit' are provided
+        if (!name || !limit) {
+            return res.status(400).json({ message: "Name and limit are required." });
+        }
+
+        // Create the new category
+        const newCategory = new BudgetCategory({
+            budgetId,
+            name,
+            limit
+        });
+
+        // Save the new category
+        const savedCategory = await newCategory.save();
+        res.status(201).json(savedCategory);  // Send back the created category
     } catch (error) {
-        res.status(500).json({ message: "Error creating category", error: error.message });
+        console.error("Error creating category:", error);
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 };
 
