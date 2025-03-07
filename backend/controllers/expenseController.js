@@ -1,75 +1,58 @@
-import Expense from '../models/Expense.js';
+import Expense from "../models/Expense.js";
 
-// Function to get all expenses for a user
+// 📌 Create Expense
+export const createExpense = async (req, res) => {
+    try {
+        const { category, amount, description } = req.body;
+        const expense = new Expense({ userId: req.params.userId, category, amount, description });
+        await expense.save();
+        res.status(201).json(expense);
+    } catch (error) {
+        res.status(500).json({ message: "Error creating expense", error: error.message });
+    }
+};
+
+// 📌 Get All Expenses for a User
 export const getExpenses = async (req, res) => {
     try {
-        const expenses = await Expense.find({ userId: req.user.id });
-        res.status(200).json(expenses);
+        const expenses = await Expense.find({ userId: req.params.userId });
+        res.json(expenses);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching expenses', error: error.message });
+        res.status(500).json({ message: "Error fetching expenses", error: error.message });
     }
 };
 
-// Function to create a new expense
-export const createExpense = async (req, res) => {
-    const { name, amount, category, date, description } = req.body;
-
+// 📌 Get Single Expense
+export const getExpense = async (req, res) => {
     try {
-        const newExpense = new Expense({
-            userId: req.user.id, // The ID of the logged-in user
-            name,
-            amount,
-            category,
-            date,
-            description,
-        });
-
-        await newExpense.save();
-
-        res.status(201).json({
-            message: 'Expense created successfully!',
-            expense: newExpense
-        });
+        const expense = await Expense.findOne({ _id: req.params.expenseId, userId: req.params.userId });
+        if (!expense) return res.status(404).json({ message: "Expense not found" });
+        res.json(expense);
     } catch (error) {
-        res.status(500).json({ message: 'Error creating expense', error: error.message });
+        res.status(500).json({ message: "Error fetching expense", error: error.message });
     }
 };
 
-// Function to update an expense
+// 📌 Update Expense
 export const updateExpense = async (req, res) => {
-    const { expenseId } = req.params;
-    const { name, amount, category, date, description } = req.body;
-
     try {
-        const updatedExpense = await Expense.findByIdAndUpdate(
-            expenseId,
-            { name, amount, category, date, description },
+        const updatedExpense = await Expense.findOneAndUpdate(
+            { _id: req.params.expenseId, userId: req.params.userId },
+            req.body,
             { new: true }
         );
-
-        if (!updatedExpense) {
-            return res.status(404).json({ message: 'Expense not found' });
-        }
-
-        res.status(200).json({ message: 'Expense updated successfully!', expense: updatedExpense });
+        res.json(updatedExpense);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating expense', error: error.message });
+        res.status(500).json({ message: "Error updating expense", error: error.message });
     }
 };
 
-// Function to delete an expense
+// 📌 Delete Expense
 export const deleteExpense = async (req, res) => {
-    const { expenseId } = req.params;
-
     try {
-        const deletedExpense = await Expense.findByIdAndDelete(expenseId);
-
-        if (!deletedExpense) {
-            return res.status(404).json({ message: 'Expense not found' });
-        }
-
-        res.status(200).json({ message: 'Expense deleted successfully!' });
+        await Expense.findOneAndDelete({ _id: req.params.expenseId, userId: req.params.userId });
+        res.json({ message: "Expense deleted successfully" });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting expense', error: error.message });
+        res.status(500).json({ message: "Error deleting expense", error: error.message });
     }
 };
