@@ -22,4 +22,4 @@ npm install
 6️⃣ Start the frontend application
 npm start
 
-✅ BudgetWise should now be running!
+BudgetWise should now be running!

@@ -6,7 +6,7 @@ const mongoURI = "mongodb+srv://ypate116:6duz2JghaKygxJMc@cluster0.k2rtz.mongodb
 mongoose
   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(async () => {
-    console.log("✅ Connected to MongoDB");
+    console.log("Connected to MongoDB");
 
     // // Define the Budget & Expense schemas
     // const Budget = mongoose.model("Budget", new mongoose.Schema({ userId: String, totalBudget: Number }));
@@ -35,11 +35,13 @@ mongoose
     // Define models
     const Budget = mongoose.model("Budget", new mongoose.Schema({}));
     const Expense = mongoose.model("Expense", new mongoose.Schema({}));
-
+    const Bill = mongoose.model("Bill", new mongoose.Schema({}));
     // Delete all budgets & expenses
     await Budget.deleteMany({});
     await Expense.deleteMany({});
-    console.log("🗑️ All budgets and expenses have been deleted!");
+    await Bill.deleteMany({});
+ 
+    console.log("🗑️ All budgets, bills and expenses have been deleted!");
 
     mongoose.connection.close();
   })

@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/auth.js';
 import expenseRoutes from "./routes/expenseRoutes.js";
+import billRoutes from "./routes/billRoutes.js"
 import budgetRoutes from "./routes/budgetRoutes.js";
 import budgetCategoryRoutes from "./routes/budgetCategoryRoutes.js";
 
@@ -27,6 +28,7 @@ app.use(cookieParser());
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/expenses", expenseRoutes);
+app.use("/api/bills", billRoutes);
 app.use("/api/budget", budgetRoutes);
 app.use("/api/budget", budgetCategoryRoutes);
 
