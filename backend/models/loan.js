@@ -8,5 +8,4 @@ const LoanSchema = new mongoose.Schema({
     status: { type: String, required: true },
     monthlyPayment: { type: Number, required: true }
 });
-
-module.exports = mongoose.model("Loan", LoanSchema);
+export default mongoose.model('Loan', LoanSchema);

@@ -1,6 +1,5 @@
 import React, { useState, useEffect} from 'react';
 import './Loan.css';
-import { set } from 'mongoose';
 
 /* This is User Story: Loan Summary - Student Role */ 
 
