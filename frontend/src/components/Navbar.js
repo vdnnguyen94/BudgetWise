@@ -30,6 +30,7 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                 break;
             case "/loan":
                 setActive(5);
+                break;
             case "/user":
                 setActive(6);
                 break;
@@ -79,16 +80,16 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                     <span>Categories</span>
                 </Link>
 
-                <Link to="/loan" className={`nav-item ${active === 7 ? "active" : ""}`}>
+                <Link to="/loan" className={`nav-item ${active === 5 ? "active" : ""}`}>
                     <span>Loan Summary</span>
                 </Link>
 
-                <Link to="/user" className={`nav-item ${active === 5 ? "active" : ""}`}>
+                <Link to="/user" className={`nav-item ${active === 6 ? "active" : ""}`}>
                     <img src={user} alt="User" />
                     <span>User</span>
                 </Link>
 
-                <Link to="/settings" className={`nav-item ${active === 6 ? "active" : ""}`}>
+                <Link to="/settings" className={`nav-item ${active === 7 ? "active" : ""}`}>
                     <img src={settings} alt="Settings" />
                     <span>Settings</span>
                 </Link>

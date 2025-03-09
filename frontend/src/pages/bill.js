@@ -127,7 +127,7 @@ const BillPage = () => {
   const handleEditBill = (bill) => {
     setIsEditing(true);
     setEditingBill(bill);
-    setNewBill({ categoryId: bill.category, amount: bill.amount, description: bill.description });
+    setNewBill({ category: bill.category, amount: bill.amount, description: bill.description, date: bill.date });
     setIsFormVisible(true);
   };
 
@@ -186,7 +186,7 @@ const BillPage = () => {
               <tr key={bill._id}>
                 <td>{bill.categoryId ? bill.categoryId.name : "No category"}</td> 
                 <td>{"$" + parseFloat(bill.amount).toFixed(2)}</td>
-                <td>{bill.date}</td> 
+                <td>{new Date(bill.date).toLocaleDateString("en-CA")}</td> 
                 <td>{bill.description}</td>
                 <td>
                   <button onClick={() => handleEditBill(bill)}>Update</button>

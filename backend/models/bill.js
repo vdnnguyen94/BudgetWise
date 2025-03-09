@@ -5,7 +5,7 @@ const BillSchema = new mongoose.Schema({
     categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "BudgetCategory", required: false },
     amount: { type: Number, required: true },
     description: { type: String },
-    date: { type: String }
+    date: { type: Date, default: Date.now }
 });
 
 const Bill = mongoose.model("Bill", BillSchema);

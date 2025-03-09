@@ -107,7 +107,7 @@ export const useBudgetWarning = (userId) => {
 
   return { budget, totalExpenses, totalBills };
 };
-
+// Check if any upcoming bills
 export const useUpcomingBillsWarning = (userId) => {
   const hasTriggered = useRef(false);
 
@@ -126,7 +126,8 @@ export const useUpcomingBillsWarning = (userId) => {
 
         if (upcomingBills.length > 0 && !hasTriggered.current) {
           upcomingBills.forEach((bill) => {
-            toast.info(`Upcoming Bill: ${bill.description} of $${bill.amount.toFixed(2)} is due on ${bill.date}`, {
+            const formattedDate = new Date(bill.date).toLocaleDateString("en-CA");
+            toast.info(`Upcoming Bill: ${bill.description} of $${bill.amount.toFixed(2)} is due on ${formattedDate}`, {
               position: "top-right",
               autoClose: 4000,
               hideProgressBar: false,
