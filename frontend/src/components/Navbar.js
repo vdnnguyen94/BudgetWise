@@ -30,6 +30,8 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                 break;
             case "/settings":
                 setActive(5);
+            case "/loan":
+                setActive(6); //Added Loan - T-- Can change to a different navigation bar. Added it to test functionality
                 break;
             default:
                 setActive(0);
@@ -70,6 +72,10 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
 
                 <Link to="/categories" className={`nav-item ${active === 3 ? "active" : ""}`}>
                     <span>Categories</span>
+                </Link>
+
+                <Link to="/loan" className={`nav-item ${active === 6 ? "active" : ""}`}>
+                    <span>Loan Summary</span>
                 </Link>
 
                 <Link to="/user" className={`nav-item ${active === 4 ? "active" : ""}`}>

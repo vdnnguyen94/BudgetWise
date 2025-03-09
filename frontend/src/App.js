@@ -6,6 +6,7 @@ import Budget from './pages/Budget';
 import UserPage from './pages/UserPage';
 import Settings from './pages/Settings';
 import ExpensePage from './pages/Expense';
+import Loan from './pages/Loan';
 import './App.css';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/expenses" element={<ExpensePage />} />
                 <Route path="/user" element={<UserPage setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/loan" element={<Loan />} />
             </Routes>
         </Router>
     );
