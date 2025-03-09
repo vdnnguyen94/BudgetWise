@@ -126,7 +126,7 @@ export const useUpcomingBillsWarning = (userId) => {
 
         if (upcomingBills.length > 0 && !hasTriggered.current) {
           upcomingBills.forEach((bill) => {
-            const formattedDate = new Date(bill.date).toLocaleDateString("en-CA");
+            const formattedDate = new Date(bill.date).toISOString().split("T")[0];
             toast.info(`Upcoming Bill: ${bill.description} of $${bill.amount.toFixed(2)} is due on ${formattedDate}`, {
               position: "top-right",
               autoClose: 4000,

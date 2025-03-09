@@ -186,7 +186,7 @@ const BillPage = () => {
               <tr key={bill._id}>
                 <td>{bill.categoryId ? bill.categoryId.name : "No category"}</td> 
                 <td>{"$" + parseFloat(bill.amount).toFixed(2)}</td>
-                <td>{new Date(bill.date).toLocaleDateString("en-CA")}</td> 
+                <td>{new Date(bill.date).toISOString().split("T")[0]}</td> 
                 <td>{bill.description}</td>
                 <td>
                   <button onClick={() => handleEditBill(bill)}>Update</button>
