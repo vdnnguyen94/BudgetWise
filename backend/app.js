@@ -10,6 +10,7 @@ import expenseRoutes from "./routes/expenseRoutes.js";
 import billRoutes from "./routes/billRoutes.js"
 import budgetRoutes from "./routes/budgetRoutes.js";
 import budgetCategoryRoutes from "./routes/budgetCategoryRoutes.js";
+import loanRoutes from './routes/loanRoutes.js'; // adding this - not sure if its connected correctly
 
 dotenv.config();
 const app = express();
@@ -31,7 +32,7 @@ app.use("/api/expenses", expenseRoutes);
 app.use("/api/bills", billRoutes);
 app.use("/api/budget", budgetRoutes);
 app.use("/api/budget", budgetCategoryRoutes);
-
+/*app.use("/api/loans", loanRoutes); - adding this - not sure if its connected correctly */
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI, {
