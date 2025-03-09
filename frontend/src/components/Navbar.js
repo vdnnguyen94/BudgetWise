@@ -6,6 +6,7 @@ import budget from "../assets/budget.png";
 import user from "../assets/user.png";
 import settings from "../assets/settings.png";
 
+
 const Navbar = ({ isAuthenticated, handleLogout }) => {
     const [active, setActive] = useState(0);
     const location = useLocation();
@@ -22,20 +23,14 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
             case "/expenses":
                 setActive(2);
                 break;
-            case "/bill":
+            case "/categories":
                 setActive(3);
                 break;
             case "/categories":
                 setActive(4);
                 break;
-            case "/loan":
-                setActive(5);
-                break;
-            case "/user":
-                setActive(6);
-                break;
             case "/settings":
-                setActive(7);
+                setActive(5);
                 break;
             default:
                 setActive(0);
@@ -73,23 +68,17 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                 <Link to="/expenses" className={`nav-item ${active === 2 ? "active" : ""}`}>
                     <span>Expenses</span>
                 </Link>
-                <Link to="/bill" className={`nav-item ${active === 3 ? "active" : ""}`}>
-                    <span>Bills</span>
-                </Link>
-                <Link to="/categories" className={`nav-item ${active === 4 ? "active" : ""}`}>
+
+                <Link to="/categories" className={`nav-item ${active === 3 ? "active" : ""}`}>
                     <span>Categories</span>
                 </Link>
 
-                <Link to="/loan" className={`nav-item ${active === 5 ? "active" : ""}`}>
-                    <span>Loan Summary</span>
-                </Link>
-
-                <Link to="/user" className={`nav-item ${active === 6 ? "active" : ""}`}>
+                <Link to="/user" className={`nav-item ${active === 4 ? "active" : ""}`}>
                     <img src={user} alt="User" />
                     <span>User</span>
                 </Link>
 
-                <Link to="/settings" className={`nav-item ${active === 7 ? "active" : ""}`}>
+                <Link to="/settings" className={`nav-item ${active === 5 ? "active" : ""}`}>
                     <img src={settings} alt="Settings" />
                     <span>Settings</span>
                 </Link>

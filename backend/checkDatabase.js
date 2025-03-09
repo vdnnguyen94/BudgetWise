@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 
+const mongoURI = "mongodb://127.0.0.1:27017/BudgetWiseIncomeDB";
 
-const mongoURI = "mongodb+srv://ypate116:6duz2JghaKygxJMc@cluster0.k2rtz.mongodb.net/budget?retryWrites=true&w=majority"; // Replace with your connection string
+//const mongoURI = "mongodb+srv://ypate116:6duz2JghaKygxJMc@cluster0.k2rtz.mongodb.net/budget?retryWrites=true&w=majority"; // Replace with your connection string
 
 mongoose
   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
