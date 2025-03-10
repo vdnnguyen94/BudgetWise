@@ -53,7 +53,7 @@ const Home = () => {
     datasets: [
       {
         data: [totalSpent, remainingBudget > 0 ? remainingBudget : 0], 
-        backgroundColor: ["#FF5733", "#28A745"], // Red = spent, Green = remaining
+        backgroundColor: ["#FF5733", "#28A745"], // Red = spent, Green remaining
         hoverBackgroundColor: ["#FF4500", "#218838"],
       },
     ],

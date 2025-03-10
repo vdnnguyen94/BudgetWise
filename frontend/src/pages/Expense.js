@@ -127,7 +127,7 @@ const ExpensePage = () => {
   const handleEditExpense = (expense) => {
     setIsEditing(true);
     setEditingExpense(expense);
-    setNewExpense({ categoryId: expense.category, amount: expense.amount, description: expense.description });
+    setNewExpense({ category: expense.category, amount: expense.amount, description: expense.description, date: expense.date });
     setIsFormVisible(true);
   };
 
@@ -186,7 +186,7 @@ const ExpensePage = () => {
               <tr key={expense._id}>
                 <td>{expense.categoryId ? expense.categoryId.name : "No category"}</td> 
                 <td>{"$" + parseFloat(expense.amount).toFixed(2)}</td>
-                <td>{new Date(expense.date).toLocaleDateString("en-GB")}</td> 
+                <td>{new Date(expense.date).toISOString().split("T")[0]}</td> 
                 <td>{expense.description}</td>
                 <td>
                   <button onClick={() => handleEditExpense(expense)}>Update</button>

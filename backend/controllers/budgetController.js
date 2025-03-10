@@ -1,4 +1,4 @@
-import Budget from "../models/Budget.js";
+import Budget from "../models/budget.js";
 import BudgetCategory from "../models/BudgetCategory.js";
 
 // 📌 Create or Update Budget
