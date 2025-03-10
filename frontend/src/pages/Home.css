@@ -1,5 +1,52 @@
-.page-title {
+.home-student-container {
     text-align: center;
-    margin-top: 50px;
+    padding: 100px 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+}
+
+h1 {
+    font-size: 28px;
+    color: #222;
+    margin-bottom: 20px;
+}
+
+.budget-summary, .spending-limit {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 500px;
+}
+
+p {
+    font-size: 16px;
+    color: #444;
+}
+
+.links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.student-btn {
+    background: #007bff;
     color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.student-btn:hover {
+    background: #0056b3;
+}
+
+.chart-container {
+    max-width: 300px;
+    margin: 20px auto;
 }
