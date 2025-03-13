@@ -2,10 +2,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     height: 100vh;
     background-color: #f4f4f4;
-    padding: 20px; /* Added padding for better spacing */
+    padding: 20px;
+    margin-top: 50px;
 }
 
 .user-page h2 {
@@ -56,6 +56,7 @@ button {
     font-size: 16px;
     cursor: pointer;
     margin-top: 10px;
+    margin-right: 10px;
     transition: background-color 0.3s; /* Smooth transition for hover */
 }
 

@@ -7,7 +7,6 @@ import user from "../assets/user.png";
 import expense from "../assets/expense.png";
 import categories from "../assets/categories.png";
 import income from "../assets/income.png";
-import settings from "../assets/settings.png";
 
 
 const Navbar = ({ isAuthenticated, handleLogout }) => {
@@ -91,10 +90,6 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                     <span>User</span>
                 </Link>
 
-                <Link to="/settings" className={`nav-item ${active === 6 ? "active" : ""}`}>
-                    <img src={settings} alt="Settings" />
-                    <span>Settings</span>
-                </Link>
 
                 <button className="login-logout-button" onClick={handleAuthAction}>
                     {isAuthenticated ? "Logout" : "Login"}

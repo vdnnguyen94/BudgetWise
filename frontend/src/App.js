@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Budget from './pages/Budget';
 import UserPage from './pages/UserPage';
-import Settings from './pages/Settings';
+import UserManagement from './pages/UserManagement';
 import ExpensePage from './pages/Expense';
 import Loan from "./pages/Loan";
 import Income from "./pages/Income";
@@ -37,7 +37,7 @@ function App() {
                 <Route path="/expenses" element={<ExpensePage />} />
                 <Route path="/income" element={<Income />} />
                 <Route path="/user" element={<UserPage setIsAuthenticated={setIsAuthenticated} />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/user-management" element={<UserManagement />} />
                 <Route path="/loan" element={<Loan />} />
             </Routes>
         </Router>

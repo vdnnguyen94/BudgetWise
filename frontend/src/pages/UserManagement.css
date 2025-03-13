@@ -1,0 +1,81 @@
+.user-management {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+.error {
+    color: red;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+select {
+    padding: 6px;
+    font-size: 14px;
+}
+
+.delete-btn {
+    padding: 6px 12px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Mobile View */
+@media (max-width: 768px) {
+    .user-management {
+        padding: 15px;
+        margin: 20px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+
+    .delete-btn {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+    }
+}

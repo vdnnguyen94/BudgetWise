@@ -28,7 +28,7 @@
 /* Bottom Navbar */
 .navbar {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     background-color: #222;
     color: white;
@@ -146,6 +146,7 @@
         bottom: 0;
         justify-content: space-between;
         padding: 12px 0;
+        width: 100%;
     }
 
     .logo-web {
@@ -188,6 +189,8 @@
         cursor: pointer;
         margin: 10px;
         transition: all 0.3s ease-in-out;
+        max-width: 80%;
+        flex-shrink: 0%;
     }
 
     .login-logout-button:hover {

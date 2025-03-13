@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './UserPage.css';
+import { Link } from "react-router-dom"; 
 const API_URL = process.env.REACT_APP_API_URL;
 
 const UserPage = ({ setIsAuthenticated }) => {
@@ -132,6 +133,16 @@ const UserPage = ({ setIsAuthenticated }) => {
                     <p><strong>Email:</strong> {user.email}</p>
                     <p><strong>Role:</strong> {user.role}</p>
                     <p><strong>Joined On:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
+    
+                    {/* Show User Management Button Only for Admin */}
+                    {user.role === "Admin" && (
+                        <Link to="/user-management">
+                            <button style={{ marginBottom: "10px", backgroundColor: "#007bff", color: "white" }}>
+                                User Management
+                            </button>
+                        </Link>
+                    )}
+    
                     <button onClick={handleLogout}>Logout</button>
                 </div>
             ) : (
@@ -153,7 +164,6 @@ const UserPage = ({ setIsAuthenticated }) => {
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
                                 />
-                               
                             </>
                         )}
                         <input
@@ -182,6 +192,7 @@ const UserPage = ({ setIsAuthenticated }) => {
             )}
         </div>
     );
-};
 
-export default UserPage;
+}
+
+    export default UserPage;
