@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import User from '../models/user.js';
-import { authenticate } from '../middleware/authMiddleware.js';
+import { authenticate, authorizeAdmin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -15,7 +15,6 @@ router.post(
         body('password').notEmpty().withMessage('Password is required')
     ],
     async (req, res) => {
-        // Validate request
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -36,7 +35,6 @@ router.post(
                 return res.status(400).json({ error: 'Invalid email or password' });
             }
 
-            // Generate JWT token
             const token = jwt.sign(
                 { id: user._id, role: user.role },
                 process.env.JWT_SECRET,
@@ -63,16 +61,16 @@ router.post(
 
 // Logout route
 router.post('/logout', (req, res) => {
-    res.clearCookie('token'); // Clear the token cookie
+    res.clearCookie('token');
     res.json({ message: 'Logout successful!' });
 });
 
-// Get User Details Route
+// Get User Details Route (Any authenticated user can access their own details)
 router.get('/me', authenticate, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password'); // Exclude password from response
+        const user = await User.findById(req.user.id).select('-password');
         if (!user) {
-            return res.status(404).json({ message: 'User  not found' });
+            return res.status(404).json({ message: 'User not found' });
         }
         res.json(user);
     } catch (error) {
@@ -84,31 +82,17 @@ router.get('/me', authenticate, async (req, res) => {
 router.post(
     '/register',
     [
-        body('username')
-            .trim()
-            .notEmpty()
-            .withMessage('Username is required')
-            .isLength({ min: 3 })
-            .withMessage('Username must be at least 3 characters long'),
-        body('email')
-            .isEmail()
-            .withMessage('Please provide a valid email')
-            .custom(async (email) => {
-                const existingUser = await User.findOne({ email });
-                if (existingUser) {
-                    throw new Error('Email already in use');
-                }
-            }),
-        body('password')
-            .isLength({ min: 3 })
-            .withMessage('Password must be at least 3 characters long'),
-        body('role')
-            .optional()
-            .isIn(['Student', 'Professional', 'Admin'])
-            .withMessage('Invalid role')
+        body('username').trim().notEmpty().withMessage('Username is required').isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
+        body('email').isEmail().withMessage('Please provide a valid email').custom(async (email) => {
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                throw new Error('Email already in use');
+            }
+        }),
+        body('password').isLength({ min: 3 }).withMessage('Password must be at least 3 characters long'),
+        body('role').optional().isIn(['Student', 'Professional', 'Admin']).withMessage('Invalid role')
     ],
     async (req, res) => {
-        // Validate request
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -117,11 +101,9 @@ router.post(
         const { username, email, password, role } = req.body;
 
         try {
-            // Hash the password
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
 
-            // Create new user
             const newUser = new User({
                 username,
                 email,
@@ -131,7 +113,6 @@ router.post(
 
             await newUser.save();
 
-            // Generate JWT Token
             const token = jwt.sign(
                 { id: newUser._id, role: newUser.role },
                 process.env.JWT_SECRET,
@@ -155,5 +136,54 @@ router.post(
         }
     }
 );
+
+// Get all users (Admin Only)
+router.get('/users', authenticate, authorizeAdmin, async (req, res) => {
+    try {
+        const users = await User.find().select('-password'); // Exclude password from response
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Delete a user (Admin Only)
+router.delete('/users/:id', authenticate, authorizeAdmin, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        await user.deleteOne();
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Update a user's role (Admin Only)
+router.put('/users/:id', authenticate, authorizeAdmin, async (req, res) => {
+    const { role } = req.body;
+
+    if (!['Student', 'Professional', 'Admin'].includes(role)) {
+        return res.status(400).json({ message: 'Invalid role' });
+    }
+
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.role = role;
+        await user.save();
+
+        res.json({ message: 'User role updated successfully', user });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
 
 export default router;

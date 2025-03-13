@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/user.js'; 
+import User from '../models/user.js';
 
 // Middleware to verify token
 export const authenticate = (req, res, next) => {
@@ -23,4 +23,12 @@ export const authenticate = (req, res, next) => {
     } catch (err) {
         return res.status(400).json({ message: 'Invalid token.' });
     }
+};
+
+// Middleware to allow only Admin users
+export const authorizeAdmin = (req, res, next) => {
+    if (!req.user || req.user.role !== 'Admin') {
+        return res.status(403).json({ message: 'Access denied, Admins only.' });
+    }
+    next();
 };

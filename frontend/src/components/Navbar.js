@@ -4,6 +4,9 @@ import "./Navbar.css";
 import home from "../assets/home.png";
 import budget from "../assets/budget.png";
 import user from "../assets/user.png";
+import expense from "../assets/expense.png";
+import categories from "../assets/categories.png";
+import income from "../assets/income.png";
 import settings from "../assets/settings.png";
 
 
@@ -69,14 +72,17 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                 </Link>
 
                 <Link to="/expenses" className={`nav-item ${active === 2 ? "active" : ""}`}>
+                    <img src={expense} alt="Expense" />
                     <span>Expenses</span>
                 </Link>
 
                 <Link to="/income" className={`nav-item ${active === 3 ? "active" : ""}`}>
+                    <img src={income} alt="Income" />
                     <span>Income</span>
                 </Link>
 
                 <Link to="/categories" className={`nav-item ${active === 4 ? "active" : ""}`}>
+                    <img src={categories} alt="Income" />
                     <span>Categories</span>
                 </Link>
 

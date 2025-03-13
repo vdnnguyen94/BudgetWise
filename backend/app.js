@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
-import userRoutes from './routes/userRoutes.js';
+//import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/auth.js';
 import expenseRoutes from "./routes/expenseRoutes.js";
 import billRoutes from "./routes/billRoutes.js"
@@ -26,7 +26,7 @@ app.use(cors({
 app.use(cookieParser());
 
 // Routes
-app.use('/api/users', userRoutes);
+//app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/bills", billRoutes);
