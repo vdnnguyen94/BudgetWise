@@ -32,7 +32,7 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
             case "/categories":
                 setActive(4);
                 break;
-            case "/categories":
+            case "/user":
                 setActive(5);
                 break;
             case "/settings":
@@ -82,7 +82,7 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                 </Link>
 
                 <Link to="/categories" className={`nav-item ${active === 4 ? "active" : ""}`}>
-                    <img src={categories} alt="Income" />
+                    <img src={categories} alt="categories" />
                     <span>Categories</span>
                 </Link>
 

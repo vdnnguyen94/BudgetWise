@@ -153,7 +153,7 @@ const ExpensePage = () => {
   };
 
   return (
-    <div>
+    <div className="expense-container">
       <h1>Expense Management</h1>
       <button onClick={toggleTableVisibility}>
         {isTableVisible ? "Hide Expense Table" : "Show Expense Table"}
