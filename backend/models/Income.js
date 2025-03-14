@@ -1,12 +1,12 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"; // Add this import
 
 const IncomeSchema = new mongoose.Schema({
    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-       categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "BudgetCategory", required: false },
-       amount: { type: Number, required: true },
-       description: { type: String },
-       date: { type: Date, default: Date.now }
-  
+   source: { type: String, required: true },
+   amount: { type: Number, required: true },
+   description: { type: String },
+   date: { type: Date, default: Date.now },
+   recurrence: { type: String, enum: ["one-time", "monthly", "weekly"], default: "one-time" } 
 });
 
 const Income = mongoose.model("Income", IncomeSchema);

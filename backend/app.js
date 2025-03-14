@@ -4,13 +4,12 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
-//import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/auth.js';
 import expenseRoutes from "./routes/expenseRoutes.js";
-import billRoutes from "./routes/billRoutes.js"
+import billRoutes from "./routes/billRoutes.js";
 import budgetRoutes from "./routes/budgetRoutes.js";
 import budgetCategoryRoutes from "./routes/budgetCategoryRoutes.js";
-import loanRoutes from './routes/loanRoutes.js'; // adding this - not sure if its connected correctly
+import incomeRoutes from "./routes/incomeRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -26,18 +25,15 @@ app.use(cors({
 app.use(cookieParser());
 
 // Routes
-//app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/expenses", expenseRoutes);
+app.use("/api/income", incomeRoutes);
 app.use("/api/bills", billRoutes);
 app.use("/api/budget", budgetRoutes);
 app.use("/api/budget", budgetCategoryRoutes);
-/*app.use("/api/loans", loanRoutes); - adding this - not sure if its connected correctly */
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI, {
-  //useNewUrlParser: true,
-  //useUnifiedTopology: true,
 }).then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
 
