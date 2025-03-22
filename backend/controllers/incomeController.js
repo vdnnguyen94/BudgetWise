@@ -97,7 +97,20 @@ export const createIncome = async (req, res) => {
 // Get All Incomes for a User
 export const getIncome = async (req, res) => {
     try {
-        const incomes = await Income.find({ userId: req.params.userId });
+        const { startDate, endDate } = req.query; // Get date range from query parameters
+
+        // Build the query object
+        const query = { userId: req.params.userId };
+
+        // Add date range filtering if provided
+        if (startDate && endDate) {
+            query.date = {
+                $gte: new Date(startDate), // Greater than or equal to startDate
+                $lte: new Date(endDate)    // Less than or equal to endDate
+            };
+        }
+
+        const incomes = await Income.find(query);
         res.json(incomes);
     } catch (error) {
         res.status(500).json({ message: "Error fetching incomes", error: error.message });

@@ -22,7 +22,18 @@ export const createOrUpdateBudget = async (req, res) => {
 // 📌 Get User Budget
 export const getBudget = async (req, res) => {
     try {
-        const budget = await Budget.findOne({ userId: req.params.userId }).populate("categories");
+        const { startDate, endDate } = req.query; // Get date range from query parameters
+
+        // Build the query object
+        const query = { userId: req.params.userId };
+
+        // Add date range filtering if provided
+        if (startDate && endDate) {
+            query.startDate = { $gte: new Date(startDate) }; // Greater than or equal to startDate
+            query.endDate = { $lte: new Date(endDate) };     // Less than or equal to endDate
+        }
+
+        const budget = await Budget.findOne(query).populate("categories");
         if (!budget) return res.status(404).json({ message: "Budget not found" });
         res.json(budget);
     } catch (error) {

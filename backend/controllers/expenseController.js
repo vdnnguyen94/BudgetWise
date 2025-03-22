@@ -34,7 +34,20 @@ export const createExpense = async (req, res) => {
 // 📌 Get All Expenses for a User
 export const getExpenses = async (req, res) => {
     try {
-        const expenses = await Expense.find({ userId: req.params.userId }).populate('categoryId');;
+        const { startDate, endDate } = req.query; // Get date range from query parameters
+
+        // Build the query object
+        const query = { userId: req.params.userId };
+
+        // Add date range filtering if provided
+        if (startDate && endDate) {
+            query.date = {
+                $gte: new Date(startDate), // Greater than or equal to startDate
+                $lte: new Date(endDate)    // Less than or equal to endDate
+            };
+        }
+
+        const expenses = await Expense.find(query).populate('categoryId');
         res.json(expenses);
     } catch (error) {
         res.status(500).json({ message: "Error fetching expenses", error: error.message });

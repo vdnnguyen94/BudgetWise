@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import budgetService from "../services/budgetService";
 import budgetCategoryService from "../services/budgetCategoryService";
 import "./Budget.css";
+import expenseService from "../services/expenseService"; // Adjust the path as necessary
+import incomeService from "../services/incomeService"; // Adjust the path as necessary
 
 const Budget = () => {
   const userId = localStorage.getItem("userId");
@@ -16,6 +18,8 @@ const Budget = () => {
   const [isEditingCategory, setIsEditingCategory] = useState(false); // State for editing
   const [editingCategory, setEditingCategory] = useState(null); // Store the category being edited
   const [showUpdateBudgetForm, setShowUpdateBudgetForm] = useState(false);// State to toggle budget update form
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     fetchBudget();
@@ -26,16 +30,15 @@ const Budget = () => {
   
   const fetchBudget = async () => {
     try {
-      const data = await budgetService.getBudget(userId);
-      console.log("Fetched Budget:", data); // Check the fetched budget data
-      if (data && data.totalBudget) {
-        setBudget(data);
-        setTotalBudget(data.totalBudget);
-      }
+        const data = await budgetService.getBudget(userId, { startDate, endDate });
+        if (data && data.totalBudget) {
+            setBudget(data);
+            setTotalBudget(data.totalBudget);
+        }
     } catch (error) {
-      setError("Failed to fetch budget.");
+        setError("Failed to fetch budget.");
     }
-  };
+};
 // Fetch categories only after budget is fetched
     useEffect(() => {
         if (budget && budget._id) {  // Make sure budget is available
@@ -150,6 +153,12 @@ const Budget = () => {
     }
   };
 
+  const handleDateRangeSubmit = (e) => {
+    e.preventDefault();
+    fetchBudget(); // Fetch budget with the selected date range
+};
+
+
   return (
     <div className="budget-page">
       <h1 className="page-title">Budget Page</h1>
@@ -257,6 +266,9 @@ const Budget = () => {
           </form>
         </div>
       )}
+
+    
+
     </div>
   );
 };

@@ -68,6 +68,19 @@ const incomeService = {
             return null;
         }
     },
+
+    getIncomeByDateRange: async (userId, startDate, endDate) => {
+        try {
+            console.log(`Fetching income for user: ${userId} from ${startDate} to ${endDate}`);
+            const response = await fetch(`${API_URL}/api/income/${userId}?startDate=${startDate}&endDate=${endDate}`);
+            const data = await response.json();
+            console.log("Income by Date Range API Response:", data);
+            return data;
+        } catch (error) {
+            console.error("Error fetching income by date range:", error);
+            return [];
+        }
+    },
 };
 
 export default incomeService;

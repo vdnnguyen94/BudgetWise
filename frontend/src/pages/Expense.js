@@ -22,6 +22,10 @@ const ExpensePage = () => {
     date: "",
   });
 
+    // Date range states
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+
   // Fetch Budget to get the budgetId
   useEffect(() => {
     const fetchBudget = async () => {
@@ -62,13 +66,13 @@ const ExpensePage = () => {
 
   const fetchExpenses = async () => {
     try {
-        const data = await expenseService.getExpenses(userId);
+        const data = await expenseService.getExpenses(userId, { startDate, endDate });
         setExpenses(data);
-        console.log("EXPENSE DATA: ", data);
+        console.log("Fetched Expenses:", data); // Log the fetched expenses
     } catch (error) {
         setError("Failed to fetch expenses.");
     }
-  };
+};
 
   // Handle Add Expense
   const handleAddExpense = async (e) => {
@@ -152,12 +156,58 @@ const ExpensePage = () => {
     setIsEditing(false);  // Close editing form when toggling
   };
 
+   // Handle date range filter submission
+   const handleDateRangeSubmit = (e) => {
+    e.preventDefault();
+    fetchExpenses(); // Fetch expenses based on the selected date range
+  };
+
+  // Export expenses to CSV
+  const exportToCSV = () => {
+    const csvData = [
+      ["Category", "Amount", "Date", "Description"],
+      ...expenses.map(expense => [
+        expense.categoryId ? expense.categoryId.name : "No category",
+        expense.amount,
+        new Date(expense.date).toISOString().split("T")[0],
+        expense.description
+      ])
+    ];
+
+    const csvContent = "data:text/csv;charset=utf-8," + csvData.map(e => e.join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "expenses.csv");
+    document.body.appendChild(link);
+    link.click();
+  };
+
+
   return (
     <div className="expense-container">
       <h1>Expense Management</h1>
       <button onClick={toggleTableVisibility}>
         {isTableVisible ? "Hide Expense Table" : "Show Expense Table"}
       </button>
+
+            {/* Date Range Filter */}
+            <form onSubmit={handleDateRangeSubmit}>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+        <button type="submit">Filter Expenses</button>
+      </form>
+
+      {/* Export to CSV Button */}
+      <button onClick={exportToCSV}>Export to CSV</button>
 
       {/* Show the "Add Expense" button */}
       <button onClick={toggleFormVisibility}>
