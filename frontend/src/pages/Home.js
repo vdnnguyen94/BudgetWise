@@ -84,6 +84,7 @@ const Home = () => {
         <Link to="/budget" className="student-btn">Manage Budget</Link>
         <Link to="/expenses" className="student-btn">Add Expense</Link>
         <Link to="/summary" className="student-btn">View Reports</Link>
+        <Link to="/loan" className="student-btn">Loan Summary</Link> {/* Add Loan Summary to Student */}
       </div>
     </div>
   );

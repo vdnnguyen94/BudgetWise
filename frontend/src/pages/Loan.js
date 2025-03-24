@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Loan.css';
 
 /* This is User Story: Loan Summary - Student Role */ 
@@ -11,6 +12,8 @@ const Loan = () => { // Added for user to input data for loan
         term: '',
         status: 'Pending'
     });
+
+     
 
     useEffect(() => {
         // going to re-edit to use a database// Want to test function first 
@@ -98,10 +101,13 @@ const Loan = () => { // Added for user to input data for loan
             document.body.removeChild(link);
         };
 
+        const navigate = useNavigate();
+
 
  return (
-       <div>
+       <div className ="loan-container">
         <h1>Loan Summary</h1>
+        <button onClick={() => navigate('/')}>Back to Dashboard</button>
         <h2>Enter Loan Amount Here</h2>
         <form className="loan-form" onSubmit={handleSubmit}>
             <div>
@@ -147,11 +153,12 @@ const Loan = () => { // Added for user to input data for loan
                     <option value="Denied">Denied</option>
                     </select>
             </div>
-            <button type="submit">Submit</button>
+            <button type="submit" className ="button primary">Submit</button>
         </form>
         <h2>Loan Summary</h2>
         <button onClick={() => exportReport(loanSummary)}>Export Report</button> 
         <br />
+        
         <table className="loan-summary-table">
             <thead>
                 <tr>
