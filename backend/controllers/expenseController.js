@@ -5,7 +5,7 @@ import Goal from "../models/Goal.js";
 // 📌 Create Expense
 export const createExpense = async (req, res) => {
     try {
-        const { categoryId, amount, description, date, goalId } = req.body; // Get date from the request body
+        const { categoryId, amount, description, date, goalId, paymentMethod } = req.body; // Include paymentMethod
 
         // Ensure the date is valid
         if (new Date(date) > new Date()) {
@@ -23,7 +23,8 @@ export const createExpense = async (req, res) => {
             amount,
             description,
             date,
-            goalId: goalId || null
+            goalId: goalId || null,
+            paymentMethod // Save paymentMethod
         });
         await expense.save();
 
@@ -39,7 +40,7 @@ export const createExpense = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Error creating expense", error: error.message });
     }
-};;
+};
 
 // 📌 Get All Expenses for a User
 export const getExpenses = async (req, res) => {
@@ -57,8 +58,15 @@ export const getExpenses = async (req, res) => {
             };
         }
 
-        const expenses = await Expense.find(query).populate('categoryId');
-        res.json(expenses);
+        // Explicitly include paymentMethod in the query
+        const expenses = await Expense.find(query).populate('categoryId').select('+paymentMethod');
+        res.json(expenses.map(expense => {
+            const expenseObj = expense.toObject(); // Convert to plain object
+            return {
+                ...expenseObj,
+                paymentMethod: expenseObj.paymentMethod // Access paymentMethod safely
+            };
+        }));
     } catch (error) {
         res.status(500).json({ message: "Error fetching expenses", error: error.message });
     }
@@ -79,7 +87,7 @@ export const getExpense = async (req, res) => {
 export const updateExpense = async (req, res) => {
     try {
         const { expenseId, userId } = req.params;
-        const { category, amount, description, date } = req.body;
+        const { categoryId, amount, description, date, goalId, paymentMethod } = req.body;
 
         // Ensure the date is valid
         if (new Date(date) > new Date()) {
@@ -88,7 +96,7 @@ export const updateExpense = async (req, res) => {
 
         const updatedExpense = await Expense.findOneAndUpdate(
             { _id: expenseId, userId: userId },
-            { category, amount, description, date },  // Update with the new date
+            { categoryId, amount, description, date, goalId, paymentMethod },
             { new: true }  // This ensures the updated data is returned
         );
 
@@ -101,8 +109,6 @@ export const updateExpense = async (req, res) => {
         res.status(500).json({ message: "Error updating expense", error: error.message });
     }
 };
-
-
 
 // 📌 Delete Expense
 export const deleteExpense = async (req, res) => {

@@ -23,6 +23,7 @@ const ExpensePage = () => {
     description: "",
     date: "",
     goal: "",
+    paymentMethod: "",
   });
 
     // Date range states
@@ -117,10 +118,11 @@ const ExpensePage = () => {
             description: newExpense.description,
             date: newExpense.date,
             goalId: newExpense.goal || null,
+            paymentMethod: newExpense.paymentMethod,
         };
         console.log("CDEBUG CATEGORY ID of EXPENSE: ", expenseData);
         await expenseService.createExpense(userId, expenseData);
-        setNewExpense({ category: "", amount: 0, description: "", date: "" , goal: "",});  // Reset form
+        setNewExpense({ category: "", amount: 0, description: "", date: "" , goal: "", paymentMethod: "",});
         fetchExpenses();  // Refetch expenses after adding
         setIsFormVisible(false);  // Hide the form
     } catch (error) {
@@ -137,7 +139,16 @@ const ExpensePage = () => {
     }
 
     try {
-      await expenseService.updateExpense(userId, editingExpense._id, newExpense);
+      const updatedExpenseData = {
+        categoryId: newExpense.category,
+        amount: newExpense.amount,
+        description: newExpense.description,
+        date: newExpense.date,
+        goalId: newExpense.goal || null,
+        paymentMethod: newExpense.paymentMethod,
+      };
+
+      await expenseService.updateExpense(userId, editingExpense._id, updatedExpenseData);
       setIsEditing(false);
       setEditingExpense(null);
       setIsFormVisible(false);
@@ -151,7 +162,7 @@ const ExpensePage = () => {
   const handleEditExpense = (expense) => {
     setIsEditing(true);
     setEditingExpense(expense);
-    setNewExpense({ category: expense.category, amount: expense.amount, description: expense.description, date: expense.date,goal: expense.goalId || "", });
+    setNewExpense({ category: expense.category, amount: expense.amount, description: expense.description, date: expense.date,goal: expense.goalId || "", paymentMethod: expense.paymentMethod || "", });
     setIsFormVisible(true);
   };
 
@@ -248,6 +259,7 @@ const ExpensePage = () => {
               <th>Amount</th>
               <th>Date</th>
               <th>Description</th>
+              <th>Payment Method</th> {/* Add Payment Method column */}
               <th>Actions</th>
             </tr>
           </thead>
@@ -258,6 +270,7 @@ const ExpensePage = () => {
                 <td>{"$" + parseFloat(expense.amount).toFixed(2)}</td>
                 <td>{new Date(expense.date).toISOString().split("T")[0]}</td> 
                 <td>{expense.description}</td>
+                <td>{expense.paymentMethod || "N/A"}</td> {/* Display Payment Method */}
                 <td>
                   <button onClick={() => handleEditExpense(expense)}>Update</button>
                   <button onClick={() => handleDeleteExpense(expense._id)}>Delete</button>
@@ -307,6 +320,23 @@ const ExpensePage = () => {
             required
             max={new Date().toISOString().split("T")[0]}
           />
+
+          <div>
+            <select
+              id="paymentMethod"
+              value={newExpense.paymentMethod}
+              onChange={(e) =>
+                setNewExpense({ ...newExpense, paymentMethod: e.target.value })
+              }
+              style={{ width: "100%", padding: "8px", marginBottom: "15px" }}
+            >
+              <option value="">Select Payment Method</option>
+              <option value="Cash">Cash</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Debit Card">Debit Card</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
 
           <select
             value={newExpense.goal}
