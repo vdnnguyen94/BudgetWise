@@ -1,10 +1,11 @@
 import Expense from "../models/Expense.js";
 import BudgetCategory from '../models/BudgetCategory.js';
+import Goal from "../models/Goal.js";
 
 // 📌 Create Expense
 export const createExpense = async (req, res) => {
     try {
-        const { categoryId, amount, description, date } = req.body; // Get date from the request body
+        const { categoryId, amount, description, date, goalId } = req.body; // Get date from the request body
 
         // Ensure the date is valid
         if (new Date(date) > new Date()) {
@@ -21,9 +22,18 @@ export const createExpense = async (req, res) => {
             categoryId,
             amount,
             description,
-            date
+            date,
+            goalId: goalId || null
         });
         await expense.save();
+
+        if (goalId) {
+            const goal = await Goal.findById(goalId);
+            if (goal) {
+                goal.currentAmount += amount;
+                await goal.save();
+            }
+        }
 
         res.status(201).json(expense);  // Return the created expense
     } catch (error) {

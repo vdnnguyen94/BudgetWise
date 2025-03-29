@@ -7,6 +7,7 @@ import user from "../assets/user.png";
 import expense from "../assets/expense.png";
 import categories from "../assets/categories.png";
 import income from "../assets/income.png";
+import goal from "../assets/goal.png";
 
 
 const Navbar = ({ isAuthenticated, handleLogout }) => {
@@ -88,6 +89,11 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                 <Link to="/user" className={`nav-item ${active === 5 ? "active" : ""}`}>
                     <img src={user} alt="User" />
                     <span>User</span>
+                </Link>
+
+                <Link to="/goals" className={`nav-item ${active === 6 ? "active" : ""}`}>
+                    <img src={goal} alt="Goals" />
+                    <span>Goals</span>
                 </Link>
 
 

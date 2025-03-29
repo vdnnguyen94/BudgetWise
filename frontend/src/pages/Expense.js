@@ -3,6 +3,7 @@ import budgetService from "../services/budgetService";
 import expenseService from "../services/expenseService";
 import budgetCategoryService from "../services/budgetCategoryService";
 import "./Expense.css";
+import goalService from "../services/goalService";
 
 const ExpensePage = () => {
   const userId = localStorage.getItem("userId");
@@ -15,11 +16,13 @@ const ExpensePage = () => {
   const [editingExpense, setEditingExpense] = useState(null);
   const [error, setError] = useState("");
   const [budgetId, setBudgetId] = useState(null);
+  const [goals, setGoals] = useState([]);
   const [newExpense, setNewExpense] = useState({
     category: "", 
     amount: 0, 
     description: "",
     date: "",
+    goal: "",
   });
 
     // Date range states
@@ -74,6 +77,22 @@ const ExpensePage = () => {
     }
 };
 
+  // Fetch Goals
+  useEffect(() => {
+    const fetchGoals = async () => {
+      try {
+        const goalData = await goalService.getGoals(userId);
+        setGoals(goalData);
+      } catch (error) {
+        console.error("Failed to fetch goals:", error);
+      }
+    };
+  
+    if (userId) {
+      fetchGoals(); // fetch goals 
+    }
+  }, [userId]);
+
   // Handle Add Expense
   const handleAddExpense = async (e) => {
     e.preventDefault();
@@ -96,11 +115,12 @@ const ExpensePage = () => {
             categoryId: newExpense.category, 
             amount: newExpense.amount,
             description: newExpense.description,
-            date: newExpense.date
+            date: newExpense.date,
+            goalId: newExpense.goal || null,
         };
         console.log("CDEBUG CATEGORY ID of EXPENSE: ", expenseData);
         await expenseService.createExpense(userId, expenseData);
-        setNewExpense({ category: "", amount: 0, description: "", date: "" });  // Reset form
+        setNewExpense({ category: "", amount: 0, description: "", date: "" , goal: "",});  // Reset form
         fetchExpenses();  // Refetch expenses after adding
         setIsFormVisible(false);  // Hide the form
     } catch (error) {
@@ -131,7 +151,7 @@ const ExpensePage = () => {
   const handleEditExpense = (expense) => {
     setIsEditing(true);
     setEditingExpense(expense);
-    setNewExpense({ category: expense.category, amount: expense.amount, description: expense.description, date: expense.date });
+    setNewExpense({ category: expense.category, amount: expense.amount, description: expense.description, date: expense.date,goal: expense.goalId || "", });
     setIsFormVisible(true);
   };
 
@@ -268,7 +288,7 @@ const ExpensePage = () => {
             type="number"
             placeholder="Amount"
             value={newExpense.amount}
-            onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
+            onChange={(e) => setNewExpense({ ...newExpense, amount: parseFloat(e.target.value) })}
             required
             min="0"
             step="0.01"
@@ -287,6 +307,18 @@ const ExpensePage = () => {
             required
             max={new Date().toISOString().split("T")[0]}
           />
+
+          <select
+            value={newExpense.goal}
+            onChange={(e) => setNewExpense({ ...newExpense, goal: e.target.value })}
+          >
+            <option value="">Optional: Link to Goal</option>
+            {goals.map((goal) => (
+              <option key={goal._id} value={goal._id}>
+                {goal.title}
+              </option>
+            ))}
+          </select>
           <button type="submit">{isEditing ? "Update Expense" : "Add Expense"}</button>
           <button type="button" onClick={toggleFormVisibility}>
             Cancel

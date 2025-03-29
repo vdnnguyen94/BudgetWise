@@ -5,7 +5,8 @@ const ExpenseSchema = new mongoose.Schema({
     categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "BudgetCategory", required: false },
     amount: { type: Number, required: true },
     description: { type: String },
-    date: { type: Date, default: Date.now }
+    date: { type: Date, default: Date.now },
+    goalId: { type: mongoose.Schema.Types.ObjectId,  ref: 'Goal', default: null }, 
 });
 
 const Expense = mongoose.model("Expense", ExpenseSchema);
