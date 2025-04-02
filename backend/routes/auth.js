@@ -7,7 +7,9 @@ import { authenticate, authorizeAdmin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Login Route
+
+// LOGIN ROUTE
+
 router.post(
     '/login',
     [
@@ -24,13 +26,11 @@ router.post(
 
         try {
             const user = await User.findOne({ email });
-
             if (!user) {
                 return res.status(400).json({ error: 'Invalid email or password' });
             }
 
             const isMatch = await bcrypt.compare(password, user.password);
-
             if (!isMatch) {
                 return res.status(400).json({ error: 'Invalid email or password' });
             }
@@ -59,13 +59,15 @@ router.post(
     }
 );
 
-// Logout route
+// LOGOUT ROUTE
+
 router.post('/logout', (req, res) => {
     res.clearCookie('token');
     res.json({ message: 'Logout successful!' });
 });
 
-// Get User Details Route (Any authenticated user can access their own details)
+// GET CURRENT USER
+
 router.get('/me', authenticate, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
@@ -78,19 +80,24 @@ router.get('/me', authenticate, async (req, res) => {
     }
 });
 
-// Register Route
+
+// REGISTER ROUTE Parent login was not registered before
+
 router.post(
     '/register',
     [
-        body('username').trim().notEmpty().withMessage('Username is required').isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
-        body('email').isEmail().withMessage('Please provide a valid email').custom(async (email) => {
-            const existingUser = await User.findOne({ email });
-            if (existingUser) {
-                throw new Error('Email already in use');
-            }
-        }),
+        body('username').trim().notEmpty().withMessage('Username is required')
+            .isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
+        body('email').isEmail().withMessage('Please provide a valid email')
+            .custom(async (email) => {
+                const existingUser = await User.findOne({ email });
+                if (existingUser) {
+                    throw new Error('Email already in use');
+                }
+            }),
         body('password').isLength({ min: 3 }).withMessage('Password must be at least 3 characters long'),
-        body('role').optional().isIn(['Student', 'Professional', 'Admin']).withMessage('Invalid role')
+        body('role').optional().isIn(['Student', 'Professional', 'Admin', 'Parent'])
+            .withMessage('Invalid role')
     ],
     async (req, res) => {
         const errors = validationResult(req);
@@ -137,25 +144,26 @@ router.post(
     }
 );
 
-// Get all users (Admin Only)
+// ADMIN: GET ALL USERS
+
 router.get('/users', authenticate, authorizeAdmin, async (req, res) => {
     try {
-        const users = await User.find().select('-password'); // Exclude password from response
+        const users = await User.find().select('-password');
         res.json(users);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
 
-// Delete a user (Admin Only)
+
+// ADMIN: DELETE USER
+
 router.delete('/users/:id', authenticate, authorizeAdmin, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
-
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
         await user.deleteOne();
         res.json({ message: 'User deleted successfully' });
     } catch (error) {
@@ -163,11 +171,13 @@ router.delete('/users/:id', authenticate, authorizeAdmin, async (req, res) => {
     }
 });
 
-// Update a user's role (Admin Only)
+
+// ADMIN: UPDATE USER ROLE
+
 router.put('/users/:id', authenticate, authorizeAdmin, async (req, res) => {
     const { role } = req.body;
 
-    if (!['Student', 'Professional', 'Admin'].includes(role)) {
+    if (!['Student', 'Professional', 'Admin', 'Parent'].includes(role)) {
         return res.status(400).json({ message: 'Invalid role' });
     }
 

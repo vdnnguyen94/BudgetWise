@@ -1,4 +1,4 @@
-.home-student-container {
+/* .home-student-container {
     text-align: center;
     padding: 100px 20px;
     background-color: #f9f9f9;
@@ -49,4 +49,19 @@ p {
 .chart-container {
     max-width: 300px;
     margin: 20px auto;
-}
+} */
+/* Home.css */
+
+.home-container {
+    padding-top: 100px; /* 👈 This pushes content below the navbar */
+    text-align: center;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+  }
+  
+  .dashboard-title {
+    font-size: 28px;
+    color: #222;
+    margin-bottom: 30px;
+  }
+  

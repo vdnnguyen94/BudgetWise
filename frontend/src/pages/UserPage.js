@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import './UserPage.css';
-import { Link } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom";
+
 const API_URL = process.env.REACT_APP_API_URL;
 
 const UserPage = ({ setIsAuthenticated }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [username, setUsername] = useState(""); // New state for username
-    const [role, setRole] = useState("Student"); // New state for role
-    const [user, setUser ] = useState(null);
+    const [username, setUsername] = useState("");
+    const [role, setRole] = useState("Student");
+    const [user, setUser] = useState(null);
     const [error, setError] = useState("");
-    const [isRegistering, setIsRegistering] = useState(false); // State to toggle between login and register
+    const [isRegistering, setIsRegistering] = useState(false);
 
-    console.log("API_URL:", API_URL);
+    const navigate = useNavigate();
+
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -28,18 +30,16 @@ const UserPage = ({ setIsAuthenticated }) => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
+
             const data = await response.json();
-            console.log("LOGIN Response Status:", response.status);
-            console.log("LOGIN Response Data:", data);
-            console.log("LOGIN DATA USER", data.user);
-            console.log("LOGIN User:", );
+
             if (response.ok) {
                 localStorage.setItem("token", data.token);
-                // localStorage.setItem("userId", data.user._id);
                 localStorage.setItem("userId", data.user._id);
+                localStorage.setItem("userRole", data.user.role);
 
                 setIsAuthenticated(true);
-                fetchUserInfo(data.token);
+                navigate("/"); // Go to Home where dashboard will load
             } else {
                 setError(data.message || "Invalid credentials!");
             }
@@ -49,9 +49,6 @@ const UserPage = ({ setIsAuthenticated }) => {
     };
 
     const handleDemoLogin = async () => {
-        setEmail("van@gmail.com");
-        setPassword("qwe123");
-
         try {
             const response = await fetch(`${API_URL}/api/auth/login`, {
                 method: "POST",
@@ -60,13 +57,14 @@ const UserPage = ({ setIsAuthenticated }) => {
             });
 
             const data = await response.json();
-            console.log("Demo Login Response:", data);
 
             if (response.ok) {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.user._id);
+                localStorage.setItem("userRole", data.user.role);
+
                 setIsAuthenticated(true);
-                fetchUserInfo(data.token);
+                navigate("/"); // now it'll navigate to home 
             } else {
                 setError(data.message || "Demo login failed!");
             }
@@ -74,41 +72,55 @@ const UserPage = ({ setIsAuthenticated }) => {
             setError("Server error. Try again later.");
         }
     };
+
     const handleRegister = async (e) => {
         e.preventDefault();
+
         try {
             const response = await fetch(`${API_URL}/api/auth/register`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, email, password, role }),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password,
+                    role
+                }),
             });
+
             const data = await response.json();
-            console.log("Response Status:", response.status);
-            console.log("Response Data:", data);
+
             if (response.ok) {
-                setIsRegistering(false); // Switch back to login after successful registration
-                setError(""); // Clear any previous errors
+                setIsRegistering(false);
+                setError("");
+                alert("Registration successful! Please log in.");
             } else {
-                setError(data.message || "Registration failed!");
+                if (data.errors && data.errors.length > 0) {
+                    setError(data.errors[0].msg);
+                } else if (data.message) {
+                    setError(data.message);
+                } else {
+                    setError("Registration failed! Please try again.");
+                }
             }
         } catch (err) {
-            setError("Server error. Try again later.");
+            console.error("REGISTER ERROR:", err);
+            setError("Server error. Please try again later.");
         }
     };
 
     const fetchUserInfo = async (token) => {
         try {
-            console.log("Fetching user info with token:", token);
             const response = await fetch(`${API_URL}/api/auth/me`, {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
             });
+
             const data = await response.json();
-            console.log("Response Status:", response.status);
-            console.log("Response Data:", data);
-            console.log("User ID: " ,data._id,);
             if (response.ok) {
-                setUser (data);
+                setUser(data);
             } else {
                 setError("Failed to fetch user data.");
             }
@@ -119,10 +131,13 @@ const UserPage = ({ setIsAuthenticated }) => {
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        setUser (null);
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userRole");
+        setUser(null);
         setEmail("");
         setPassword("");
         setIsAuthenticated(false);
+        navigate("/");
     };
 
     return (
@@ -133,8 +148,7 @@ const UserPage = ({ setIsAuthenticated }) => {
                     <p><strong>Email:</strong> {user.email}</p>
                     <p><strong>Role:</strong> {user.role}</p>
                     <p><strong>Joined On:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
-    
-                    {/* Show User Management Button Only for Admin */}
+
                     {user.role === "Admin" && (
                         <Link to="/user-management">
                             <button style={{ marginBottom: "10px", backgroundColor: "#007bff", color: "white" }}>
@@ -142,7 +156,6 @@ const UserPage = ({ setIsAuthenticated }) => {
                             </button>
                         </Link>
                     )}
-    
                     <button onClick={handleLogout}>Logout</button>
                 </div>
             ) : (
@@ -154,6 +167,7 @@ const UserPage = ({ setIsAuthenticated }) => {
                             <>
                                 <select value={role} onChange={(e) => setRole(e.target.value)}>
                                     <option value="Student">Student</option>
+                                    <option value="Parent">Parent</option>
                                     <option value="Professional">Professional</option>
                                     <option value="Admin">Admin</option>
                                 </select>
@@ -168,7 +182,7 @@ const UserPage = ({ setIsAuthenticated }) => {
                         )}
                         <input
                             type="email"
-                            placeholder=" Email"
+                            placeholder="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -185,14 +199,16 @@ const UserPage = ({ setIsAuthenticated }) => {
                     <button onClick={() => setIsRegistering(!isRegistering)}>
                         {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
                     </button>
-                    <button onClick={handleDemoLogin} style={{ marginTop: "10px", backgroundColor: "#28a745", color: "white" }}>
+                    <button
+                        onClick={handleDemoLogin}
+                        style={{ marginTop: "10px", backgroundColor: "#28a745", color: "white" }}
+                    >
                         Demo Sign-In
                     </button>
                 </div>
             )}
         </div>
     );
+};
 
-}
-
-    export default UserPage;
+export default UserPage;

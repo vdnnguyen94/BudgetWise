@@ -9,6 +9,8 @@ import ExpensePage from './pages/Expense';
 import Loan from "./pages/Loan";
 import Income from "./pages/Income";
 import Goals from "./pages/Goals";
+import DashboardWrapper from './pages/DashboardWrapper';
+
 
 import './App.css';
 
@@ -41,6 +43,9 @@ function App() {
                 <Route path="/user-management" element={<UserManagement />} />
                 <Route path="/loan" element={<Loan />} />
                 <Route path="/goals" element={<Goals />} />
+                <Route path="/dashboard/:role" element={<DashboardWrapper />} />
+
+
             </Routes>
         </Router>
     );
