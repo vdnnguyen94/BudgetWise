@@ -30,7 +30,7 @@ const Budget = () => {
   
   const fetchBudget = async () => {
     try {
-        const data = await budgetService.getBudget(userId, { startDate, endDate });
+        const data = await budgetService.getBudget(userId);
         if (data && data.totalBudget) {
             setBudget(data);
             setTotalBudget(data.totalBudget);

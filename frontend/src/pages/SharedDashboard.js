@@ -34,7 +34,8 @@ const SharedDashboard = () => {
 
   const fetchExpenses = async () => {
     try {
-      const data = await expenseService.getExpenses(userId);
+      const data = await expenseService.getExpenses(userId, {});
+      console.log("USER ID: ", userId);
       setExpenses(data);
     } catch (error) {
       setError("Failed to fetch expenses.");
