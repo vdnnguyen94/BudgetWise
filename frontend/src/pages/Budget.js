@@ -195,9 +195,11 @@ const Budget = () => {
               <ul>
                 {categories.map((category) => (
                   <li key={category._id}>
-                    {category.name} - ${category.limit} 
-                    <button onClick={() => handleUpdateCategory(category)}>Update</button>
-                    <button onClick={() => handleDeleteCategory(category._id)}>Delete</button>
+                      <span className="category-info">{category.name} - ${category.limit}</span>
+                      <div className="category-actions">
+                        <button onClick={() => handleUpdateCategory(category)}>Update</button>
+                        <button onClick={() => handleDeleteCategory(category._id)}>Delete</button>
+                      </div>
                   </li>
                 ))}
               </ul>

@@ -1,5 +1,93 @@
 .page-title {
     text-align: center;
-    margin-top: 50px;
+    margin-top: 30px;
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .budget-page {
+    max-width: 900px;
+    margin: auto;
+    padding: 30px;
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2, h3 {
+    color: #444;
+    margin-top: 20px;
+  }
+  
+  button {
+    background-color: #007bff;
     color: white;
-}
+    border: none;
+    padding: 8px 16px;
+    margin: 6px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  form {
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+  
+  input[type="text"],
+  input[type="number"] {
+    padding: 8px;
+    margin: 5px 10px 10px 0;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  li {
+    margin: 8px 0;
+    padding: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  li .category-info {
+    flex-grow: 1;
+    font-weight: 500;
+  }
+  
+  li .category-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .summary-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    text-align: center;
+  }
+  
+  .summary-box p {
+    margin: 6px 0;
+    font-size: 1rem;
+    color: #333;
+  }
