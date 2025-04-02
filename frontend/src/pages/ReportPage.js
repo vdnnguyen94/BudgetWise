@@ -46,12 +46,13 @@ const ReportPage = () => {
   };
 
   return (
+    <div className="report-page">
     <div className="shared-dashboard">
       <h2>📊 Monthly Report</h2>
-      <div className="links">
-        <button className={`student-btn ${month === "2025-03" ? "active" : ""}`} onClick={() => setMonth("2025-03")}>March 2025</button>
-        <button className={`student-btn ${month === "2025-04" ? "active" : ""}`} onClick={() => setMonth("2025-04")}>April 2025</button>
-      </div>
+        <div className="month-selector">
+            <button className={month === "2025-03" ? "active" : ""} onClick={() => setMonth("2025-03")}>March 2025</button>
+            <button className={month === "2025-04" ? "active" : ""} onClick={() => setMonth("2025-04")}>April 2025</button>
+        </div>
 
       {error && <p className="error">{error}</p>}
 
@@ -108,6 +109,7 @@ const ReportPage = () => {
           </div>
         </>
       )}
+    </div>
     </div>
   );
 };
