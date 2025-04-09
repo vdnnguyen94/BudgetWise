@@ -29,17 +29,20 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                 case "/income":
                     setActive(3);
                     break;    
-            case "/categories":
-                setActive(4);
+            case "/savings":
+                setActive (4);
                 break;
-            case "/user":
+            case "/categories":
                 setActive(5);
                 break;
-            case "/settings":
+            case "/user":
                 setActive(6);
                 break;
-            default:
+            case "/settings":
                 setActive(7);
+                break;
+            default:
+                setActive(8);
         }
     }, [location]);
 
@@ -81,17 +84,22 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                     <span>Income</span>
                 </Link>
 
-                <Link to="/report" className={`nav-item ${active === 4 ? "active" : ""}`}>
+                <Link to="/saving" className={`nav-item ${active === 4 ? "active" : ""}`}>
+                    <img src={income} alt="Savings" />
+                    <span>Savings</span>
+                </Link>
+
+                <Link to="/report" className={`nav-item ${active === 5 ? "active" : ""}`}>
                     <img src={reports} alt="Reports" />
                     <span>Reports</span>
                 </Link>
 
-                <Link to="/user" className={`nav-item ${active === 5 ? "active" : ""}`}>
+                <Link to="/user" className={`nav-item ${active === 6 ? "active" : ""}`}>
                     <img src={user} alt="User" />
                     <span>User</span>
                 </Link>
 
-                <Link to="/goals" className={`nav-item ${active === 6 ? "active" : ""}`}>
+                <Link to="/goals" className={`nav-item ${active === 7 ? "active" : ""}`}>
                     <img src={goal} alt="Goals" />
                     <span>Goals</span>
                 </Link>

@@ -11,6 +11,7 @@ import Income from "./pages/Income";
 import Goals from "./pages/Goals";
 import DashboardWrapper from './pages/DashboardWrapper';
 import MonthlyReport from './pages/ReportPage';
+import Savings from "./pages/Savings";
 
 import './App.css';
 
@@ -39,12 +40,16 @@ function App() {
                 <Route path="/budget" element={<Budget />} />
                 <Route path="/expenses" element={<ExpensePage />} />
                 <Route path="/income" element={<Income />} />
+                <Route path="/saving" element={<Savings />} />
                 <Route path="/user" element={<UserPage setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/user-management" element={<UserManagement />} />
                 <Route path="/loan" element={<Loan />} />
                 <Route path="/goals" element={<Goals />} />
                 <Route path="/dashboard/:role" element={<DashboardWrapper />} />
                 <Route path="/report" element={<MonthlyReport />} />
+                
+
+
 
 
             </Routes>

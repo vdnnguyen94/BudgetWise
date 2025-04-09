@@ -82,12 +82,16 @@ const Income = () => {
                     <option value="Reselling">Reselling</option>
                 </select>
                 <input 
-                    type="number" 
-                    placeholder="Amount" 
-                    value={newIncome.amount} 
-                    onChange={(e) => setNewIncome({ ...newIncome, amount: Number(e.target.value) })} 
-                    required 
-                />
+                  type="number" 
+                  min="0"
+                 step="0.01"
+                 placeholder="Amount" 
+                 value={newIncome.amount === 0 ? "" : newIncome.amount} 
+                  onChange={(e) => setNewIncome({ ...newIncome, amount: Number(e.target.value) })} 
+                   required 
+               />
+
+                
                 <input 
                     type="date" 
                     value={newIncome.date} 
