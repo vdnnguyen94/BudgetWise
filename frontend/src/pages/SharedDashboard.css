@@ -76,4 +76,102 @@
     font-weight: bold;
     margin-top: 15px;
   }
+  .login-prompt {
+    text-align: center;
+    padding: 40px;
+    background-color: #fefefe;
+    border-radius: 10px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+  }
   
+  .login-prompt h3 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .login-prompt p {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .login-link-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .login-link-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .animated {
+    animation: fadeIn 0.6s ease-in-out both;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .login-prompt {
+    text-align: center;
+    padding: 40px 30px;
+    background: linear-gradient(to right, #ffffff, #f3f4f6);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    margin: 40px auto;
+    max-width: 500px;
+    width: 90%;
+    transition: transform 0.3s ease;
+  }
+  
+  .login-prompt:hover {
+    transform: translateY(-3px);
+  }
+  
+  
+  .login-prompt:hover {
+    transform: scale(1.02);
+  }
+  
+  .login-prompt h3 {
+    font-size: 28px;
+    color: #222;
+    margin-bottom: 10px;
+  }
+  
+  .login-prompt p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  .login-link-button {
+    background-color: #3b82f6;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 16px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s ease, transform 0.2s;
+  }
+  
+  .login-link-button:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
+  }
+    

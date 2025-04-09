@@ -109,7 +109,7 @@ const Savings = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="5">No savings found.</td>
+              <td colSpan={5}>No savings found.</td>
             </tr>
           )}
         </tbody>

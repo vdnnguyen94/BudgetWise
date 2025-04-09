@@ -41,11 +41,10 @@ const Income = () => {
         }
     };
 
-    // Handle Delete Income
     const handleDeleteIncome = async (incomeId) => {
         try {
             await incomeService.deleteIncome(userId, incomeId);
-            fetchIncome(); // Re-fetch the income list after deletion
+            fetchIncome();
         } catch (error) {
             setError("Failed to delete income.");
         }
@@ -56,12 +55,10 @@ const Income = () => {
             <h1>Income Management</h1>
             {error && <p style={{ color: "red" }}>{error}</p>}
 
-            {/* Income Summary */}
             <div className="summary-box">
                 <h3>Total Income: ${totalIncome}</h3>
             </div>
 
-            {/* Income Entry Form */}
             <h2>Add New Income</h2>
             <form onSubmit={handleAddIncome}>
                 <select 
@@ -84,14 +81,12 @@ const Income = () => {
                 <input 
                   type="number" 
                   min="0"
-                 step="0.01"
-                 placeholder="Amount" 
-                 value={newIncome.amount === 0 ? "" : newIncome.amount} 
+                  step="0.01"
+                  placeholder="Amount" 
+                  value={newIncome.amount === 0 ? "" : newIncome.amount} 
                   onChange={(e) => setNewIncome({ ...newIncome, amount: Number(e.target.value) })} 
-                   required 
+                  required 
                />
-
-                
                 <input 
                     type="date" 
                     value={newIncome.date} 
@@ -104,8 +99,6 @@ const Income = () => {
                     value={newIncome.description} 
                     onChange={(e) => setNewIncome({ ...newIncome, description: e.target.value })} 
                 />
-
-                {/* Dropdown for Recurrence */}
                 <select 
                     value={newIncome.recurrence} 
                     onChange={(e) => setNewIncome({ ...newIncome, recurrence: e.target.value })}
@@ -114,11 +107,9 @@ const Income = () => {
                     <option value="monthly">Monthly</option>
                     <option value="weekly">Weekly</option>
                 </select>
-
                 <button type="submit">Add Income</button>
             </form>
 
-            {/* Income List */}
             <h2>Your Income History</h2>
             <table>
                 <thead>
@@ -126,6 +117,7 @@ const Income = () => {
                         <th>Source</th>
                         <th>Amount ($)</th>
                         <th>Date</th>
+                        <th>Description</th>
                         <th>Recurrence</th>
                         <th>Actions</th>
                     </tr>
@@ -137,6 +129,7 @@ const Income = () => {
                                 <td>{inc.source}</td>
                                 <td>{inc.amount}</td>
                                 <td>{new Date(inc.date).toLocaleDateString()}</td>
+                                <td>{inc.description || "-"}</td>
                                 <td>{inc.recurrence}</td>
                                 <td>
                                     <button 
@@ -150,7 +143,7 @@ const Income = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={5}>No income records found.</td>
+                            <td colSpan={6}>No income records found.</td>
                         </tr>
                     )}
                 </tbody>
