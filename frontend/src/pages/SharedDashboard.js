@@ -63,7 +63,13 @@ const SharedDashboard = () => {
 
   return (
     <div className="shared-dashboard">
-      
+      {token && (
+        <h3 style={{ marginBottom: "30px", fontWeight: "bold" }}>
+          {role ? `${role} Dashboard` : "Dashboard"}
+        </h3>
+      )}
+
+      {error && <p className="error" style={{ color: "red" }}>{error}</p>}
 
       {!token ? (
        <div className="login-prompt animated">

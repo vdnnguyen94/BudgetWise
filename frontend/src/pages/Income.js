@@ -7,10 +7,10 @@ const Income = () => {
     const [incomeList, setIncomeList] = useState([]);
     const [newIncome, setNewIncome] = useState({
         source: "",
-        amount: 0,
+        amount: "",
         date: "",
         description: "",
-        recurrence: "",  
+        recurrence: "one-time",
     });
     const [error, setError] = useState("");
     const [totalIncome, setTotalIncome] = useState(0);
@@ -33,9 +33,15 @@ const Income = () => {
     const handleAddIncome = async (e) => {
         e.preventDefault();
         try {
-            await incomeService.createIncome(userId, newIncome);
-            setNewIncome({ source: "", amount: 0, date: "", description: "", recurrence: "" }); 
-            fetchIncome();  
+            const incomeToAdd = {
+                ...newIncome,
+                amount: parseFloat(newIncome.amount),
+                recurrence: newIncome.recurrence || "one-time",
+            };
+
+            await incomeService.createIncome(userId, incomeToAdd);
+            setNewIncome({ source: "", amount: "", date: "", description: "", recurrence: "one-time" });
+            fetchIncome();
         } catch (error) {
             setError("Failed to add income.");
         }
@@ -56,14 +62,14 @@ const Income = () => {
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             <div className="summary-box">
-                <h3>Total Income: ${totalIncome}</h3>
+                <h3>Total Income: ${totalIncome.toFixed(2)}</h3>
             </div>
 
             <h2>Add New Income</h2>
             <form onSubmit={handleAddIncome}>
-                <select 
-                    value={newIncome.source} 
-                    onChange={(e) => setNewIncome({ ...newIncome, source: e.target.value })} 
+                <select
+                    value={newIncome.source}
+                    onChange={(e) => setNewIncome({ ...newIncome, source: e.target.value })}
                     required
                 >
                     <option value="">Select Source</option>
@@ -78,35 +84,40 @@ const Income = () => {
                     <option value="Student Grants">Student Grants</option>
                     <option value="Reselling">Reselling</option>
                 </select>
-                <input 
-                  type="number" 
-                  min="0"
-                  step="0.01"
-                  placeholder="Amount" 
-                  value={newIncome.amount === 0 ? "" : newIncome.amount} 
-                  onChange={(e) => setNewIncome({ ...newIncome, amount: Number(e.target.value) })} 
-                  required 
-               />
-                <input 
-                    type="date" 
-                    value={newIncome.date} 
-                    onChange={(e) => setNewIncome({ ...newIncome, date: e.target.value })} 
-                    required 
+
+                <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="Amount"
+                    value={newIncome.amount}
+                    onChange={(e) => setNewIncome({ ...newIncome, amount: e.target.value })}
+                    required
                 />
-                <input 
-                    type="text" 
-                    placeholder="Description" 
-                    value={newIncome.description} 
-                    onChange={(e) => setNewIncome({ ...newIncome, description: e.target.value })} 
+
+                <input
+                    type="date"
+                    value={newIncome.date}
+                    onChange={(e) => setNewIncome({ ...newIncome, date: e.target.value })}
+                    required
                 />
-                <select 
-                    value={newIncome.recurrence} 
+
+                <input
+                    type="text"
+                    placeholder="Description"
+                    value={newIncome.description}
+                    onChange={(e) => setNewIncome({ ...newIncome, description: e.target.value })}
+                />
+
+                <select
+                    value={newIncome.recurrence}
                     onChange={(e) => setNewIncome({ ...newIncome, recurrence: e.target.value })}
                 >
                     <option value="one-time">One-Time</option>
                     <option value="monthly">Monthly</option>
                     <option value="weekly">Weekly</option>
                 </select>
+
                 <button type="submit">Add Income</button>
             </form>
 
@@ -127,13 +138,13 @@ const Income = () => {
                         incomeList.map((inc) => (
                             <tr key={inc._id}>
                                 <td>{inc.source}</td>
-                                <td>{inc.amount}</td>
+                                <td>{inc.amount.toFixed(2)}</td>
                                 <td>{new Date(inc.date).toLocaleDateString()}</td>
                                 <td>{inc.description || "-"}</td>
                                 <td>{inc.recurrence}</td>
                                 <td>
-                                    <button 
-                                        className="delete-btn" 
+                                    <button
+                                        className="delete-btn"
                                         onClick={() => handleDeleteIncome(inc._id)}
                                     >
                                         Delete

@@ -1,13 +1,16 @@
 import Income from "../models/Income.js";
 
 // Create Income
+import Income from "../models/Income.js";
+
+// Create Income
 export const createIncome = async (req, res) => {
     try {
-        const { source, amount, date, description, recurrence } = req.body; // Include recurrence here
+        const { source, amount, date, description, recurrence } = req.body;
         const userId = req.params.userId;
 
-        if (!source || !amount || !recurrence) { 
-            return res.status(400).json({ message: "Source, Amount, and Recurrence are required." });
+        if (!source || !amount || amount <= 0) {
+            return res.status(400).json({ message: "Valid Source and Amount are required." });
         }
 
         const income = new Income({
@@ -16,7 +19,7 @@ export const createIncome = async (req, res) => {
             amount,
             date,
             description,
-            recurrence 
+            recurrence: recurrence || "one-time"  // ✅ Fixed here!
         });
 
         await income.save();
@@ -25,6 +28,7 @@ export const createIncome = async (req, res) => {
         res.status(500).json({ message: "Error creating income", error: error.message });
     }
 };
+
 
 // Get All Incomes for a User
 export const getIncome = async (req, res) => {
