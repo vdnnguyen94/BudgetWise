@@ -5,6 +5,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import expenseService from "../services/expenseService";
 import budgetService from "../services/budgetService";
 import "./SharedDashboard.css";
+import { useBudgetWarning, useBudget, useUpcomingBillsWarning, useCategoryBudgetWarning } from "../utilities/hooks";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -26,7 +27,11 @@ const SharedDashboard = () => {
     fetchBudget();
     fetchExpenses();
   }, []);
-
+  useBudget(userId)
+  useBudgetWarning(userId);
+  useUpcomingBillsWarning(userId);
+  useCategoryBudgetWarning(userId, budget?._id);
+  
   const fetchBudget = async () => {
     try {
       const data = await budgetService.getBudget(userId);

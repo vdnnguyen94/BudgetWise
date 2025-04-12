@@ -35,7 +35,7 @@ export const useTotalExpenses = (userId) => {
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
-        const expenses = await expenseService.getExpenses(userId);
+        const expenses = await expenseService.getExpenses(userId, {});
         if (expenses.length > 0) {
           const total = expenses.reduce((acc, expense) => acc + parseFloat(expense.amount), 0);
           setTotalExpenses(total);

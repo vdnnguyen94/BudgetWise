@@ -1,5 +1,3 @@
-import Income from "../models/Income.js";
-
 // Create Income
 import Income from "../models/Income.js";
 
