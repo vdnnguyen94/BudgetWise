@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import goalService from "../services/goalService.js";
+import "./Goals.css";
 
 const Goals = () => {
   const userId = localStorage.getItem("userId");
