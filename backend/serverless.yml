@@ -1,13 +1,10 @@
 service: budgetwise-backend
-
 frameworkVersion: '3'
 
 provider:
   name: aws
   runtime: nodejs18.x
   region: us-east-2
-  # The serverless-dotenv-plugin will handle environment variables now
-  # So we can remove the explicit environment block from here.
 
 functions:
   app:
@@ -16,18 +13,26 @@ functions:
       - http:
           path: /
           method: get
+          cors:
+            origins:
+              - https://budgetwise-mu.vercel.app
+              - http://localhost:3000
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
       - http:
           path: /{proxy+}
           method: any
-
-plugins:
-  - serverless-offline
-  - serverless-dotenv-plugin
-
-# Add this custom section at the end of the file
-custom:
-  dotenv:
-    path: ./.env # This tells the plugin where to look for variables
-  serverless-offline:
-    noPrependStageInUrl: true  #This line removes the /dev prefix locally
-    httpPort: 5000
+          cors:
+            origins:
+              - https://budgetwise-mu.vercel.app
+              - http://localhost:3000
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+      - http:
+          path: /{proxy+}
+          method: options
+          cors: true
