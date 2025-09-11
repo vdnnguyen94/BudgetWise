@@ -20,7 +20,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://budgetwise-yash.netlify.app'],
+  origin: ['http://localhost:3000', 'https://budgetwise-mu.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
