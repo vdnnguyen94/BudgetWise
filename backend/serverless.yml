@@ -1,5 +1,5 @@
 service: budgetwise-api
-frameworkVersion: '4'
+frameworkVersion: '3'
 
 
 provider:
