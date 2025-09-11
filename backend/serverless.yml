@@ -1,4 +1,4 @@
-service: budgetwise-api
+service: budgetwise-backend
 
 frameworkVersion: '3'
 

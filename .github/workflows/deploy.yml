@@ -37,11 +37,13 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-2
 
-      - name: Write .env file from GitHub Secrets
-        run: |
-          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+      - name: Deploy with Serverless Framework
+        run: npx serverless deploy
         working-directory: ./backend
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
 
       - name: Deploy with Serverless Framework
         run: npx serverless deploy
