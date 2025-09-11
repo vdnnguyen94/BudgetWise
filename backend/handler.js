@@ -1,5 +1,5 @@
 import serverless from 'serverless-http';
-import app from './app.js';
+import appJs from './app.js';
 
 
-export const http = serverless(app);
+export const app = serverless(appJs);
