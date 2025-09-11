@@ -40,6 +40,29 @@ functions:
           method: options
           cors: true
 
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseType: DEFAULT_4XX
+        RestApiId: { Ref: ApiGatewayRestApi }
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'https://budgetwise-mu.vercel.app'"
+          gatewayresponse.header.Access-Control-Allow-Credentials: "'true'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+    GatewayResponseDefault5XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseType: DEFAULT_5XX
+        RestApiId: { Ref: ApiGatewayRestApi }
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'https://budgetwise-mu.vercel.app'"
+          gatewayresponse.header.Access-Control-Allow-Credentials: "'true'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+
 
 plugins:
   - serverless-offline
