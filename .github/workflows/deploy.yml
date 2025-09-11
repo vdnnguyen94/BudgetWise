@@ -30,8 +30,8 @@ working-directory: ./backend
 - name: Configure AWS credentials
 uses: aws-actions/configure-aws-credentials@v4
 with:
-role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-aws-region: us-east-2
+  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+  aws-region: us-east-2
 
 
 - name: Deploy with Serverless Framework
