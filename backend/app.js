@@ -26,6 +26,10 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
+// --- Add a root route for testing ---
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'BudgetWise Server is running!' });
+});
 // Routes
 app.use('/api/auth', authRoutes);
 app.use("/api/expenses", expenseRoutes);
