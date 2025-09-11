@@ -1,38 +1,24 @@
 service: budgetwise-api
+
 frameworkVersion: '3'
 
-
 provider:
-name: aws
-runtime: nodejs18.x
-region: us-east-2
-stage: prod
-environment:
-NODE_ENV: lambda
-MONGO_URI: ${ssm:/budgetwise/MONGO_URI~true}
-PORT: ${ssm:/budgetwise/PORT}
-JWT_SECRET: ${ssm:/budgetwise/JWT_SECRET~true}
-httpApi:
-cors:
-allowedOrigins:
-- '*'
-allowedMethods:
-- GET
-- POST
-- PUT
-- DELETE
-- OPTIONS
-
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-2
+  environment:
+    MONGO_URI: ${env:MONGO_URI}
+    JWT_SECRET: ${env:JWT_SECRET}
+    PORT: 5000
 
 functions:
-api:
-handler: handler.http
-events:
-- httpApi: '*'
+  app:
+    handler: handler.app
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
+          cors: true
 
-
-package:
-patterns:
-- '!node_modules/.bin/**'
-- '!**/*.test.js'
-- '!jest.config.js'
+plugins:
+  - serverless-offline
