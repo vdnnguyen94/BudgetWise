@@ -3,143 +3,161 @@
 A simple full-stack budgeting app with a **Node.js/Express** backend and a **React** frontend.
 
 ## Features
-- Track budgets and expenses by category  
-- REST API (Express) with MongoDB  
-- Modern React frontend (Vite or CRA)  
-- Ready for CI/CD and cloud hosting
 
----
+* Track budgets and expenses by category
+* REST API (Express) with MongoDB
+* Modern React frontend (Vite or CRA)
+* Ready for CI/CD and cloud hosting
 
 ## Tech Stack
-- **Backend:** Node.js ≥ 18, Express, Mongoose  
-- **Frontend:** React (Vite/CRA)  
-- **Database:** MongoDB (Atlas or self-hosted)
 
----
+* **Backend:** Node.js v18, Express, Mongoose, Serverless Framework
+* **Frontend:** React (Vite/CRA)
+* **Database:** MongoDB (Atlas or self-hosted)
 
 ## Project Structure
-```
+
+\`\`\`
 BudgetWise/
 ├─ backend/                 # Node.js + Express API
 │  ├─ src/                  # controllers, models, routes, middleware
-│  ├─ tests/                # Jest tests (optional)
 │  ├─ package.json
 │  └─ .env                  # server secrets (create locally)
 └─ frontend/                # React app (Vite/CRA)
    ├─ src/
    ├─ package.json
    └─ .env                  # client env (create locally)
-```
-
----
+\`\`\`
 
 ## Prerequisites
-- **Node.js** ≥ 18 and **npm**  
-- **Git**  
-- (Optional) **MongoDB** connection string for production/deployment  
 
----
+* **Node.js** v18 and **npm** (We recommend using [nvm](https://github.com/nvm-sh/nvm) to manage Node versions)
+* **Git** - A **MongoDB** connection string (e.g., from a free MongoDB Atlas account)
 
-## Quick Start
+## Local Development Setup
 
-### 1) Clone & Install
-```bash
-mkdir BudgetWise && cd BudgetWise
-git clone https://github.com/vdnnguyen94/BudgetWise.git .
-cd backend && npm install
-cd ../frontend && npm install
-```
+### 1. Clone the Repository
 
-### 2) Environment Variables
+\`\`\`
+git clone https://github.com/vdnnguyen94/BudgetWise.git
+cd BudgetWise
+\`\`\`
 
-**`backend/.env`**
-create env file
+### 2. Backend Setup
 
-**`frontend/.env`**
-create frontend .env file
+Follow these steps in a terminal to get the backend server running.
 
-## Run Locally (two terminals)
-
-**Backend**
-```bash
+\`\`\`
+# Navigate to the backend directory
 cd backend
-npm start
-```
 
-**Frontend**
-```bash
+# Set the correct Node.js version
+# This ensures your local environment matches the deployment environment.
+nvm install 18 # Installs Node.js v18 if you don't have it
+nvm use 18     # Switches your current terminal session to use v18
+
+# Install dependencies
+npm install
+
+# Create the environment file
+# Create a new file named .env in the \`backend\` directory and add your secret keys:
+# MONGO_URI=your_mongodb_connection_string
+# JWT_SECRET=your_super_secret_jwt_key
+# PORT=5000
+
+# Start the local serverless environment
+npx serverless offline
+\`\`\`
+
+The backend API will now be running on \`http://localhost:5000\`. Keep this terminal open.
+
+### 3. Frontend Setup
+
+Open a **second terminal** to set up and run the frontend.
+
+\`\`\`
+# Navigate to the frontend directory from the project root
 cd frontend
-npm start
 
-```
+# Install dependencies
+npm install
+
+# Create the environment file
+# Create a new file named .env in the \`frontend\` directory for your client-side variables.
+# Example:
+# REACT_APP_API_URL=http://localhost:5000
+
+# Start the frontend development server
+npm start
+\`\`\`
+
+Your frontend application should now be running, typically on \`http://localhost:3000\`, and will be able to communicate with your local backend.
 
 ## Recommended Git Feature Branch Workflow
 
-This workflow is designed to ensure you always start new work from the most up-to-date version of the `main` branch, which helps prevent merge conflicts and keeps the project history clean.
+This workflow is designed to ensure you always start new work from the most up-to-date version of the \`main\` branch, which helps prevent merge conflicts and keeps the project history clean.
 
----
+### 1. Check Your Current Status
 
-## 1. Check Your Current Status
-```bash
+\`\`\`
 git status
-```
-* **Comment:** This is a safety check. Before doing anything, see if you have any uncommitted changes. You should ideally start this workflow from a "clean" state (no modifications). If you have changes, either commit them, stash them, or discard them.
+\`\`\`
 
----
+* **Comment:** A safety check to see if you have uncommitted changes.
 
-## 2. Fetch Remote Updates
-```bash
+### 2. Fetch Remote Updates
+
+\`\`\`
 git fetch
-```
-* **Comment:** This command downloads all the latest information from the remote repository (e.g., GitHub), including new branches and commits. It **does not** change any of your local files or branches yet. It just updates your local Git's "map" of what the remote repository looks like.
+\`\`\`
 
----
+* **Comment:** Downloads the latest information from the remote repository without changing your local files.
 
-## 3. Switch to the Main Branch
-```bash
+### 3. Switch to the Main Branch
+
+\`\`\`
 git switch main
-```
-* **Comment:** To update your local `main` branch, you first need to be on it. This command ensures you are actively on the `main` branch before you pull in the latest changes. (Note: `git checkout main` does the same thing).
+\`\`\`
 
----
+* **Comment:** Ensures you are on the \`main\` branch before updating it.
 
-## 4. Update Your Local Main Branch
-```bash
+### 4. Update Your Local Main Branch
+
+\`\`\`
 git pull --rebase origin main
-```
-* **Comment:** This is a crucial step. It takes the changes you fetched from the remote `origin` and applies them to your local `main` branch.
-    * The `--rebase` flag is important here. It prevents a "merge commit" if you happen to have local changes on `main` (which you shouldn't). It rewinds your local commits, pulls the remote changes, and then reapplies your commits on top, creating a clean, linear history. This ensures your local `main` is an exact, up-to-date copy of the remote.
+\`\`\`
 
----
+* **Comment:** Pulls the latest changes from the remote \`main\` branch and reapplies your local commits on top, keeping a clean history.
 
-## 5. Create and Switch to a New Feature Branch
-```bash
+### 5. Create and Switch to a New Feature Branch
+
+\`\`\`
 git switch -c feat/<task>
-```
-* **Comment:** Now that your `main` branch is perfectly in sync with the remote, this command creates a new branch for your task. The `-c` flag both **c**reates the new branch and switches to it in one step. All your new work will be safely isolated here, leaving the `main` branch untouched. (Note: `git checkout -b feat/<task>` is the older equivalent).
+\`\`\`
 
----
+* **Comment:** Creates a new branch for your task and switches to it.
 
-## 6. Do Your Work & Stage Changes
-```bash
+### 6. Do Your Work & Stage Changes
+
+\`\`\`
 # ... do your coding and make changes to files ...
 git add -A
-```
-* **Comment:** After you have made some changes, this command stages them. `add -A` stages all new, modified, and deleted files, preparing them to be saved in a commit. You will run this command every time you are ready to save a snapshot of your work.
+\`\`\`
 
----
+* **Comment:** Stages all your changes, preparing them for a commit.
 
-## 7. Commit Your Changes
-```bash
+### 7. Commit Your Changes
+
+\`\`\`
 git commit -m "feat: something"
-```
-* **Comment:** This command saves your staged changes to your local branch's history. The message (`-m`) should be a short, clear description of the work you did. The `feat:` prefix is part of a convention called "Conventional Commits," which helps keep commit history organized.
+\`\`\`
 
----
+* **Comment:** Saves your staged changes to your local branch's history.
 
-## 8. Push Your New Branch to the Remote
-```bash
+### 8. Push Your New Branch to the Remote
+
+\`\`\`
 git push -u origin feat/<task>
-```
-* **Comment:** This command uploads your new branch and its commits to the remote repository (`origin`).
-    * The `-u` (or `--set-upstream`) flag is used on the *first push* of a new branch. It links your local branch to the remote branch, so in the future, you can simply run `git push` from this branch without specifying the destination. This is how you share your work and create a Pull Request.
+\`\`\`
+
+* **Comment:** Uploads your new branch and its commits to the remote repository.
