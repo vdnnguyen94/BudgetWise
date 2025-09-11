@@ -16,16 +16,9 @@ functions:
       - http:
           path: /
           method: get
-          cors: &corsConfig
-            origin: 'https://budgetwise-mu.vercel.app,http://localhost:3000'
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
       - http:
           path: /{proxy+}
           method: any
-          cors: *corsConfig
 
 plugins:
   - serverless-offline
