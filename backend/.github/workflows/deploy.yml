@@ -1,0 +1,39 @@
+name: Deploy to AWS Lambda
+
+
+on:
+push:
+branches: [main]
+
+
+jobs:
+deploy:
+runs-on: ubuntu-latest
+permissions:
+contents: read
+id-token: write
+
+
+steps:
+- uses: actions/checkout@v4
+
+
+- uses: actions/setup-node@v4
+with:
+node-version: '18'
+
+
+- run: npm ci
+working-directory: ./backend
+
+
+- name: Configure AWS credentials
+uses: aws-actions/configure-aws-credentials@v4
+with:
+role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+aws-region: us-east-1
+
+
+- name: Deploy with Serverless Framework
+run: npx serverless deploy
+working-directory: ./backend

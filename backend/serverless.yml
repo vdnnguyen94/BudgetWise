@@ -1,0 +1,38 @@
+service: budgetwise-api
+frameworkVersion: '3'
+
+
+provider:
+name: aws
+runtime: nodejs18.x
+region: us-east-1
+stage: prod
+environment:
+NODE_ENV: lambda
+MONGO_URI: ${ssm:/budgetwise/MONGO_URI~true}
+PORT: ${ssm:/budgetwise/PORT}
+JWT_SECRET: ${ssm:/budgetwise/JWT_SECRET~true}
+httpApi:
+cors:
+allowedOrigins:
+- '*'
+allowedMethods:
+- GET
+- POST
+- PUT
+- DELETE
+- OPTIONS
+
+
+functions:
+api:
+handler: handler.http
+events:
+- httpApi: '*'
+
+
+package:
+patterns:
+- '!node_modules/.bin/**'
+- '!**/*.test.js'
+- '!jest.config.js'
