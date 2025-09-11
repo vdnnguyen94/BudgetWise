@@ -6,10 +6,7 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: us-east-2
-  environment:
-    MONGO_URI: ${env:MONGO_URI}
-    JWT_SECRET: ${env:JWT_SECRET}
-    PORT: 5000
+
 
 functions:
   app:
@@ -26,3 +23,8 @@ functions:
 
 plugins:
   - serverless-offline
+  - serverless-dotenv-plugin 
+
+custom:
+  dotenv:
+    path: ./.env # This tells the plugin where to look for variables
