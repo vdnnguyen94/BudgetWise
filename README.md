@@ -17,7 +17,7 @@ A simple full-stack budgeting app with a **Node.js/Express** backend and a **Rea
 
 ## Project Structure
 
-\`\`\`
+```
 BudgetWise/
 ├─ backend/                 # Node.js + Express API
 │  ├─ src/                  # controllers, models, routes, middleware
@@ -27,7 +27,7 @@ BudgetWise/
    ├─ src/
    ├─ package.json
    └─ .env                  # client env (create locally)
-\`\`\`
+```
 
 ## Prerequisites
 
@@ -38,10 +38,10 @@ BudgetWise/
 
 ### 1. Clone the Repository
 
-\`\`\`
+```
 git clone https://github.com/vdnnguyen94/BudgetWise.git
 cd BudgetWise
-\`\`\`
+```
 
 ### 2. Backend Setup
 
