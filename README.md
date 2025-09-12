@@ -93,6 +93,24 @@ npm start
 
 Your frontend application should now be running, typically on \`http://localhost:3000\`, and will be able to communicate with your local backend.
 
+
+## 🚨 Important Note on Core Backend Files
+
+The following files are critical for the serverless configuration and database connection.  
+Do **not** modify them unless you are an administrator or are familiar with the serverless architecture:
+
+- `serverless.yml`
+- `handler.js`
+- `db.js`
+- `.github/workflows//deploy.yml`
+When working with `app.js`, please only add new API routes. Avoid changing the existing middleware or configuration.
+
+---
+
+## 🌐 Production URL
+
+[https://budgetwise-mu.vercel.app/](https://budgetwise-mu.vercel.app/)
+
 ## Recommended Git Feature Branch Workflow
 
 This workflow is designed to ensure you always start new work from the most up-to-date version of the \`main\` branch, which helps prevent merge conflicts and keeps the project history clean.
