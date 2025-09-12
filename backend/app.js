@@ -44,10 +44,10 @@ app.use("/api/goals", goalRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/savings", savingRoutes);
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI, {
-}).then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+// // Database Connection
+// mongoose.connect(process.env.MONGO_URI, {
+// }).then(() => console.log('MongoDB Connected'))
+//   .catch(err => console.log(err));
 
 // if (process.env.IS_OFFLINE) {
 //   const PORT = process.env.PORT || 5000;
