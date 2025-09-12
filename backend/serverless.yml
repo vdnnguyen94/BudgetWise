@@ -8,37 +8,48 @@ provider:
   region: us-east-2
   # The serverless-dotenv-plugin will handle environment variables now
   # So we can remove the explicit environment block from here.
-
 functions:
   app:
     handler: handler.app
     events:
       - http:
           path: /
-          method: get
-          cors:
-            origins:
-              - https://budgetwise-mu.vercel.app
-              - http://localhost:3000
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
+          method: any # Use 'any' for the root to catch all methods
+          cors: true
       - http:
           path: /{proxy+}
           method: any
-          cors:
-            origins:
-              - https://budgetwise-mu.vercel.app
-              - http://localhost:3000
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
-      - http:
-          path: /{proxy+}
-          method: options
-          cors: true
+          cors: true # This is the simplified configuration
+# functions:
+#   app:
+#     handler: handler.app
+#     events:
+#       - http:
+#           path: /
+#           method: geta
+#           cors:
+#             origins:
+#               - https://budgetwise-mu.vercel.app
+#               - http://localhost:3000
+#             headers:
+#               - Content-Type
+#               - Authorization
+#             allowCredentials: true
+#       - http:
+#           path: /{proxy+}
+#           method: any
+#           cors:
+#             origins:
+#               - https://budgetwise-mu.vercel.app
+#               - http://localhost:3000
+#             headers:
+#               - Content-Type
+#               - Authorization
+#             allowCredentials: true
+#       - http:
+#           path: /{proxy+}
+#           method: options
+#           cors: true
 
 resources:
   Resources:

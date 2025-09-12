@@ -44,10 +44,10 @@ app.use("/api/goals", goalRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/savings", savingRoutes);
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI, {
-}).then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+// Database Connection FROM db.js
+// mongoose.connect(process.env.MONGO_URI, {
+// }).then(() => console.log('MongoDB Connected'))
+//   .catch(err => console.log(err));
 
 // The app.listen() block is removed.
 // serverless-http in handler.js manages the server lifecycle.
