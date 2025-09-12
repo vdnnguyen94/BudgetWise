@@ -44,13 +44,17 @@ app.use("/api/goals", goalRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/savings", savingRoutes);
 
-// Database Connection FROM db.js
-// mongoose.connect(process.env.MONGO_URI, {
-// }).then(() => console.log('MongoDB Connected'))
-//   .catch(err => console.log(err));
+// Database Connection
+mongoose.connect(process.env.MONGO_URI, {
+}).then(() => console.log('MongoDB Connected'))
+  .catch(err => console.log(err));
 
-// The app.listen() block is removed.
-// serverless-http in handler.js manages the server lifecycle.
+if (process.env.IS_OFFLINE) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
+  });
+}
 
 export default app;
 
