@@ -1,23 +1,20 @@
-# BudgetWise
+# BudgetWise  
 
-A simple full-stack budgeting app with a **Node.js/Express** backend and a **React** frontend.
+A simple full-stack budgeting app with a Node.js/Express backend and a React frontend.  
 
-## Features
+## Features  
+- Track budgets and expenses by category  
+- REST API (Express) with MongoDB  
+- Modern React frontend (Vite or CRA)  
+- Ready for CI/CD and cloud hosting  
 
-* Track budgets and expenses by category
-* REST API (Express) with MongoDB
-* Modern React frontend (Vite or CRA)
-* Ready for CI/CD and cloud hosting
+## Tech Stack  
+- **Backend:** Node.js v18, Express, Mongoose, Serverless Framework  
+- **Frontend:** React (Vite/CRA)  
+- **Database:** MongoDB (Atlas or self-hosted)  
 
-## Tech Stack
-
-* **Backend:** Node.js v18, Express, Mongoose, Serverless Framework
-* **Frontend:** React (Vite/CRA)
-* **Database:** MongoDB (Atlas or self-hosted)
-
-## Project Structure
-
-```
+## Project Structure  
+```text
 BudgetWise/
 ├─ backend/                 # Node.js + Express API
 │  ├─ src/                  # controllers, models, routes, middleware
@@ -27,155 +24,117 @@ BudgetWise/
    ├─ src/
    ├─ package.json
    └─ .env                  # client env (create locally)
-```
+```  
 
-## Prerequisites
+## Prerequisites  
+- **Node.js** v18 and **npm** (We recommend using [nvm](https://github.com/nvm-sh/nvm))  
+- **Git**  
+- **MongoDB** connection string (e.g., MongoDB Atlas)  
 
-* **Node.js** v18 and **npm** (We recommend using [nvm](https://github.com/nvm-sh/nvm) to manage Node versions)
-* **Git** - A **MongoDB** connection string (e.g., from a free MongoDB Atlas account)
+## Local Development Setup  
 
-## Local Development Setup
-
-### 1. Clone the Repository
-
-```
+### 1. Clone the Repository  
+```bash
 git clone https://github.com/vdnnguyen94/BudgetWise.git
 cd BudgetWise
+```  
+
+### 2. Backend Setup  
+```bash
+cd backend
+nvm install 18
+nvm use 18
+npm install
 ```
 
-### 2. Backend Setup
+Create a `.env` file in `backend/` with:  
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_super_secret_jwt_key
+PORT=5000
+```
 
-Follow these steps in a terminal to get the backend server running.
-
-\`\`\`
-# Navigate to the backend directory
-cd backend
-
-# Set the correct Node.js version
-# This ensures your local environment matches the deployment environment.
-nvm install 18 # Installs Node.js v18 if you don't have it
-nvm use 18     # Switches your current terminal session to use v18
-
-# Install dependencies
-npm install
-
-# Create the environment file
-# Create a new file named .env in the \`backend\` directory and add your secret keys:
-# MONGO_URI=your_mongodb_connection_string
-# JWT_SECRET=your_super_secret_jwt_key
-# PORT=5000
-
-# Start the local serverless environment
+Start the local serverless environment:  
+```bash
 npx serverless offline
-\`\`\`
+```
+➡️ Backend runs at [http://localhost:5000](http://localhost:5000)  
 
-The backend API will now be running on \`http://localhost:5000\`. Keep this terminal open.
-
-### 3. Frontend Setup
-
-Open a **second terminal** to set up and run the frontend.
-
-\`\`\`
-# Navigate to the frontend directory from the project root
+### 3. Frontend Setup  
+```bash
 cd frontend
-
-# Install dependencies
 npm install
+```
 
-# Create the environment file
-# Create a new file named .env in the \`frontend\` directory for your client-side variables.
-# Example:
-# REACT_APP_API_URL=http://localhost:5000
+Create a `.env` file in `frontend/` with:  
+```env
+REACT_APP_API_URL=http://localhost:5000
+```
 
-# Start the frontend development server
+Start the frontend development server:  
+```bash
 npm start
-\`\`\`
-
-Your frontend application should now be running, typically on \`http://localhost:3000\`, and will be able to communicate with your local backend.
-
-
-## 🚨 Important Note on Core Backend Files
-
-The following files are critical for the serverless configuration and database connection.  
-Do **not** modify them unless you are an administrator or are familiar with the serverless architecture:
-
-- `serverless.yml`
-- `handler.js`
-- `db.js`
-- `.github/workflows//deploy.yml`
-When working with `app.js`, please only add new API routes. Avoid changing the existing middleware or configuration.
+```
+➡️ Frontend runs at [http://localhost:3000](http://localhost:3000)  
 
 ---
 
-## 🌐 Production URL
+## 🚨 Important Note on Core Backend Files  
+Do not modify these unless you are familiar with the serverless architecture:  
 
-[https://budgetwise-mu.vercel.app/](https://budgetwise-mu.vercel.app/)
+- serverless.yml  
+- handler.js  
+- db.js  
+- .github/workflows/deploy.yml  
 
-## Recommended Git Feature Branch Workflow
+When working with app.js, only add new API routes. Avoid changing existing middleware/config.  
 
-This workflow is designed to ensure you always start new work from the most up-to-date version of the \`main\` branch, which helps prevent merge conflicts and keeps the project history clean.
+---
 
-### 1. Check Your Current Status
+## 🌐 Production URL  
+[https://budgetwise-mu.vercel.app/](https://budgetwise-mu.vercel.app/)  
 
-\`\`\`
+---
+
+## Recommended Git Feature Branch Workflow  
+
+1. Check your status  
+```bash
 git status
-\`\`\`
+```  
 
-* **Comment:** A safety check to see if you have uncommitted changes.
-
-### 2. Fetch Remote Updates
-
-\`\`\`
+2. Fetch remote updates  
+```bash
 git fetch
-\`\`\`
+```  
 
-* **Comment:** Downloads the latest information from the remote repository without changing your local files.
-
-### 3. Switch to the Main Branch
-
-\`\`\`
+3. Switch to the main branch  
+```bash
 git switch main
-\`\`\`
+```  
 
-* **Comment:** Ensures you are on the \`main\` branch before updating it.
-
-### 4. Update Your Local Main Branch
-
-\`\`\`
+4. Update your local main  
+```bash
 git pull --rebase origin main
-\`\`\`
+```  
 
-* **Comment:** Pulls the latest changes from the remote \`main\` branch and reapplies your local commits on top, keeping a clean history.
+5. Create a new feature branch  
+```bash
+git switch -c feat/your-feature
+```  
 
-### 5. Create and Switch to a New Feature Branch
-
-\`\`\`
-git switch -c feat/<task>
-\`\`\`
-
-* **Comment:** Creates a new branch for your task and switches to it.
-
-### 6. Do Your Work & Stage Changes
-
-\`\`\`
-# ... do your coding and make changes to files ...
+6. Stage changes  
+```bash
 git add -A
-\`\`\`
+```  
 
-* **Comment:** Stages all your changes, preparing them for a commit.
+7. Commit changes  
+```bash
+git commit -m "feat: description"
+```  
 
-### 7. Commit Your Changes
+8. Push branch to remote  
+```bash
+git push -u origin feat/your-feature
+```  
 
-\`\`\`
-git commit -m "feat: something"
-\`\`\`
-
-* **Comment:** Saves your staged changes to your local branch's history.
-
-### 8. Push Your New Branch to the Remote
-
-\`\`\`
-git push -u origin feat/<task>
-\`\`\`
-
-* **Comment:** Uploads your new branch and its commits to the remote repository.
