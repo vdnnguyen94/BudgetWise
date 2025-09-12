@@ -49,12 +49,12 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
 
-if (process.env.IS_OFFLINE) {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
-  });
-}
+// if (process.env.IS_OFFLINE) {
+//   const PORT = process.env.PORT || 5000;
+//   app.listen(PORT, () => {
+//     console.log(`Server is running at http://localhost:${PORT}`);
+//   });
+// }
 
 export default app;
 
