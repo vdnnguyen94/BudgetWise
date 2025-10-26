@@ -12,8 +12,15 @@ import goal from "../assets/goal.png";
 
 const Navbar = ({ isAuthenticated, handleLogout }) => {
     const [active, setActive] = useState(0);
+    const [userRole, setUserRole] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
+
+    // Get user role from localStorage
+    useEffect(() => {
+        const role = localStorage.getItem('userRole');
+        setUserRole(role);
+    }, [isAuthenticated]); // Re-check when authentication changes
 
     useEffect(() => {
         switch (location.pathname) {
@@ -41,8 +48,11 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
             case "/settings":
                 setActive(7);
                 break;
-            default:
+            case "/parent-dashboard":
                 setActive(8);
+                break;
+            default:
+                setActive(9);
         }
     }, [location]);
 
@@ -103,6 +113,14 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                     <img src={goal} alt="Goals" />
                     <span>Goals</span>
                 </Link>
+
+                {/* Show Manage Children link only for Parent role users */}
+                {isAuthenticated && userRole === 'Parent' && (
+                    <Link to="/parent-dashboard" className={`nav-item ${active === 8 ? "active" : ""}`}>
+                        <img src={user} alt="Children" />
+                        <span>My Children</span>
+                    </Link>
+                )}
 
 
                 <button className="login-logout-button" onClick={handleAuthAction}>
