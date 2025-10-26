@@ -12,6 +12,7 @@ import Goals from "./pages/Goals";
 import DashboardWrapper from './pages/DashboardWrapper';
 import MonthlyReport from './pages/ReportPage';
 import Savings from "./pages/Savings";
+import ParentDashboard from './pages/ParentDashboard';
 import ProtectedRoute from './components/ProtectedRoutes';
 
 
@@ -19,13 +20,20 @@ import ProtectedRoute from './components/ProtectedRoutes';
 import './App.css';
 
 function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        // Initialize state from localStorage immediately
+        return !!localStorage.getItem('token');
+    });
 
     // Check localStorage for existing login session on mount
     useEffect(() => {
         const token = localStorage.getItem('token');
+        console.log('App mounted - Token exists:', !!token);
+        console.log('isAuthenticated:', isAuthenticated);
         if (token) {
             setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(false);
         }
     }, []);
 
@@ -85,6 +93,8 @@ function App() {
                 <MonthlyReport />
               </ProtectedRoute>
             }/>
+    
+            <Route path="/parent-dashboard" element={<ParentDashboard />} />
     
             <Route path="/user" element={<UserPage setIsAuthenticated={setIsAuthenticated} />} />
             <Route path="/user-management" element={<UserManagement />} />

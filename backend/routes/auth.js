@@ -1,3 +1,4 @@
+// @ts-nocheck
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -96,7 +97,7 @@ router.post(
                 }
             }),
         body('password').isLength({ min: 3 }).withMessage('Password must be at least 3 characters long'),
-        body('role').optional().isIn(['Student', 'Professional', 'Admin', 'Parent'])
+        body('role').optional().isIn(['Student', 'Professional', 'Admin', 'Parent', 'Child'])
             .withMessage('Invalid role')
     ],
     async (req, res) => {
@@ -177,7 +178,7 @@ router.delete('/users/:id', authenticate, authorizeAdmin, async (req, res) => {
 router.put('/users/:id', authenticate, authorizeAdmin, async (req, res) => {
     const { role } = req.body;
 
-    if (!['Student', 'Professional', 'Admin', 'Parent'].includes(role)) {
+    if (!['Student', 'Professional', 'Admin', 'Parent', 'Child'].includes(role)) {
         return res.status(400).json({ message: 'Invalid role' });
     }
 

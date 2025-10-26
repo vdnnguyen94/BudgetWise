@@ -6,8 +6,27 @@ const UserSchema = new mongoose.Schema({
     password: { type: String, required: true },
     role: { 
         type: String, 
-        enum: ['Student', 'Professional', 'Admin', 'Parent'],  //  Added 'Parent'
+        enum: ['Student', 'Professional', 'Admin', 'Parent', 'Child'],  //  Added 'Parent' and 'Child'
         default: 'Student' 
+    },
+    // Parent-Child relationship fields
+    parentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    children: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    // Child account specific fields
+    dateOfBirth: {
+        type: Date,
+        default: null
+    },
+    allowance: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 

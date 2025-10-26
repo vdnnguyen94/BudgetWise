@@ -6,11 +6,14 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: us-east-2
+  timeout: 30
   # The serverless-dotenv-plugin will handle environment variables now
   # So we can remove the explicit environment block from here.
 functions:
   app:
     handler: handler.app
+    timeout: 30
+
     events:
       - http:
           path: /
