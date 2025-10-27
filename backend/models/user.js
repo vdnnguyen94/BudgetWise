@@ -27,7 +27,17 @@ const UserSchema = new mongoose.Schema({
     allowance: {
         type: Number,
         default: 0
+    },
+    //parent controlled finances(Shanjai)
+    spendingLimit:{
+        type:Number,
+        default:0
+    },
+    monthlyBudget: {
+        type: Number,
+        default: 0
     }
+
 }, { timestamps: true });
 
 export default mongoose.model('User', UserSchema);

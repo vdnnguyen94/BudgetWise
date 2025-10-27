@@ -17,7 +17,9 @@ const ParentDashboard = () => {
         email: '',
         password: '',
         dateOfBirth: '',
-        allowance: 0
+        allowance: 0,
+        spendingLimit:'',
+        monthlyBudget: ''
     });
 
     // Fetch children on component mount
@@ -43,6 +45,12 @@ const ParentDashboard = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        // Prevent negative numbers: ensures allowance, spending limit, and monthly budget stay 0 or positive
+         if (['allowance', 'spendingLimit', 'monthlyBudget'].includes(name)) {
+            const num = value === '' ? '' : Math.max(0, Number(value));
+            setFormData(prev => ({ ...prev, [name]: num }));
+            return;
+        }
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -60,7 +68,9 @@ const ParentDashboard = () => {
                 email: '',
                 password: '',
                 dateOfBirth: '',
-                allowance: 0
+                allowance: 0,
+                spendingLimit: '',
+                monthlyBudget: ''
             });
             fetchChildren();
         } catch (error) {
@@ -73,7 +83,9 @@ const ParentDashboard = () => {
         setFormData({
             username: child.username,
             dateOfBirth: child.dateOfBirth ? child.dateOfBirth.split('T')[0] : '',
-            allowance: child.allowance || 0
+            allowance: child.allowance || 0,
+            spendingLimit: child.spendingLimit > 0 ? child.spendingLimit : '',
+            monthlyBudget: child.monthlyBudget > 0 ? child.monthlyBudget : ''
         });
         setShowEditModal(true);
     };
@@ -84,7 +96,9 @@ const ParentDashboard = () => {
             const updateData = {
                 username: formData.username,
                 dateOfBirth: formData.dateOfBirth,
-                allowance: parseFloat(formData.allowance)
+                allowance: parseFloat(formData.allowance) || 0,
+                spendingLimit: formData.spendingLimit === '' ? 0 : Number(formData.spendingLimit),
+                monthlyBudget: formData.monthlyBudget === '' ? 0 : Number(formData.monthlyBudget)
             };
             await parentService.updateChild(selectedChild._id, updateData);
             toast.success('Child account updated successfully!');
@@ -156,6 +170,14 @@ const ParentDashboard = () => {
                                 )}
                                 <p className="text-gray-600">
                                     <span className="font-medium">Allowance:</span> ${child.allowance || 0}
+                                </p>
+                                <p className="text-gray-600">
+                                    <span className="font-medium">Spending Limit:</span>{' '}
+                                    {child.spendingLimit > 0 ? `$${child.spendingLimit}` : '—'}
+                                </p>
+                                <p className="text-gray-600">
+                                    <span className="font-medium">Monthly Budget:</span>{' '}
+                                    {child.monthlyBudget > 0 ? `$${child.monthlyBudget}` : '—'}
                                 </p>
                             </div>
 
@@ -258,7 +280,9 @@ const ParentDashboard = () => {
                                             email: '',
                                             password: '',
                                             dateOfBirth: '',
-                                            allowance: 0
+                                            allowance: 0,
+                                            spendingLimit: '',
+                                            monthlyBudget: ''
                                         });
                                     }}
                                     className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg transition"
@@ -308,6 +332,33 @@ const ParentDashboard = () => {
                                         onChange={handleInputChange}
                                         min="0"
                                         step="0.01"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                {/*  Edit fields for spending limit & monthly budget */}
+                                <div className="pt-2">
+                                    <label className="block text-sm font-medium mb-1">Spending Limit ($)</label>
+                                    <input
+                                        type="number"
+                                        name="spendingLimit"
+                                        value={formData.spendingLimit}
+                                        onChange={handleInputChange}
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="Leave empty for no limit"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Monthly Budget ($)</label>
+                                    <input
+                                        type="number"
+                                        name="monthlyBudget"
+                                        value={formData.monthlyBudget}
+                                        onChange={handleInputChange}
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="Leave empty for no cap"
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 </div>

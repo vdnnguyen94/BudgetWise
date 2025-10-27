@@ -8,6 +8,7 @@ ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const ReportPage = () => {
   const userId = localStorage.getItem("userId");
+ const userRole = localStorage.getItem("userRole");
   const [month, setMonth] = useState(() => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
@@ -44,6 +45,10 @@ const ReportPage = () => {
       }
     ]
   };
+    const fmt = (n) => {
+      const num = Number(n);
+      return Number.isFinite(num) ? num.toFixed(2) : "0.00";
+    };
 
   return (
     <div className="report-page">
@@ -67,6 +72,25 @@ const ReportPage = () => {
             <p><strong>Remaining:</strong> ${report.summary.remaining.toFixed(2)}</p>
 
           </div>
+          {report.childLimits && (
+              <div className="summary-card">
+                <h3>{userRole === "Child" ? "👨‍👩‍👧 Parental Controls" : "👨‍👩‍👧 Child Controls"}</h3>
+                <p>
+                  <strong>Per-transaction Limit:</strong>{" "}
+                  {Number(report.childLimits.spendingLimit) > 0 ? `$${fmt(report.childLimits.spendingLimit)}` : "No limit"}
+                </p>
+                <p>
+                  <strong>Monthly Budget:</strong>{" "}
+                  {Number(report.childLimits.monthlyBudget) > 0 ? `$${fmt(report.childLimits.monthlyBudget)}` : "No cap"}
+                </p>
+                {Number(report.childLimits.monthlyBudget) > 0 && (
+                  <>
+                    <p><strong>Spent This Month:</strong> ${fmt(report.childLimits.spentThisMonth)}</p>
+                    <p><strong>Remaining This Month:</strong> ${fmt(report.childLimits.remainingThisMonth)}</p>
+                  </>
+                )}
+              </div>
+            )}
 
           <div className="limit-card">
             <h3>🎯 Budget by Category</h3>
