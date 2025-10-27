@@ -1,6 +1,7 @@
 import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
 
+
 // Add a child account
 export const addChild = async (req, res) => {
     try {
@@ -163,7 +164,7 @@ export const updateChild = async (req, res) => {
     try {
         const parentId = req.user.id;
         const childId = req.params.childId;
-        const { username, dateOfBirth, allowance } = req.body;
+        const { username, dateOfBirth, allowance, spendingLimit, monthlyBudget } = req.body;
 
         const parent = await User.findById(parentId);
         if (!parent) {
@@ -188,6 +189,8 @@ export const updateChild = async (req, res) => {
         if (username) child.username = username;
         if (dateOfBirth) child.dateOfBirth = dateOfBirth;
         if (allowance !== undefined) child.allowance = allowance;
+        if (spendingLimit !== undefined) child.spendingLimit = Number(spendingLimit);
+        if (monthlyBudget !== undefined) child.monthlyBudget = Number(monthlyBudget);
 
         await child.save();
 
@@ -198,7 +201,9 @@ export const updateChild = async (req, res) => {
                 username: child.username,
                 email: child.email,
                 dateOfBirth: child.dateOfBirth,
-                allowance: child.allowance
+                allowance: child.allowance,
+                spendingLimit: child.spendingLimit,
+                monthlyBudget: child.monthlyBudget
             }
         });
     } catch (error) {

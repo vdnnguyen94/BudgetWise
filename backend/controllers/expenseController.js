@@ -1,6 +1,16 @@
 import Expense from "../models/Expense.js";
 import BudgetCategory from '../models/BudgetCategory.js';
 import Goal from "../models/Goal.js";
+import User from '../models/user.js';
+
+
+// Function to get start and end of month
+const monthRange = (d) => {
+    const date = d ? new Date(d) : new Date();
+    const start = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0);
+    const end   = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
+    return { start, end };
+};
 
 // 📌 Create Expense
 export const createExpense = async (req, res) => {
@@ -15,6 +25,39 @@ export const createExpense = async (req, res) => {
         const category = await BudgetCategory.findById(categoryId);
         if (!category) {
             return res.status(400).json({ message: "Invalid category ID." });
+        }
+        const user = await User.findById(req.params.userId).select('role spendingLimit monthlyBudget');
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        // Parent-set limit if the user is Child
+        if (user.role === 'Child') {
+            const amt = Number(amount) || 0;
+
+            // 1) Per-transaction spending limit (0 means no limit)
+            if (user.spendingLimit > 0 && amt > user.spendingLimit) {
+                return res.status(400).json({
+                    message: `This transaction exceeds your spending limit ($${user.spendingLimit.toFixed(2)}).`
+                });
+            }
+
+            // 2) Monthly budget cap (0 means no cap)
+            if (user.monthlyBudget > 0) {
+                const { start, end } = monthRange(date);
+                const monthExpenses = await Expense.find({
+                    userId: req.params.userId,
+                    date: { $gte: start, $lte: end }
+                }).select('amount');
+
+                const spent = monthExpenses.reduce((s, e) => s + Number(e.amount || 0), 0);
+                if (spent + amt > user.monthlyBudget) {
+                    const remaining = Math.max(0, user.monthlyBudget - spent);
+                    return res.status(400).json({
+                        message: `This expense would exceed your monthly budget. Remaining: $${remaining.toFixed(2)} of $${user.monthlyBudget.toFixed(2)}.`
+                    });
+                }
+            }
         }
 
         const expense = new Expense({
