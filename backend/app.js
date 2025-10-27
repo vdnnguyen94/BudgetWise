@@ -13,6 +13,7 @@ import incomeRoutes from "./routes/incomeRoutes.js";
 import goalRoutes from './routes/goalRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import savingRoutes from "./routes/savingRoutes.js";
+import savingGoalRoutes from "./routes/savingGoalRoutes.js";
 import parentRoutes from './routes/parentRoutes.js';
 
 dotenv.config();
@@ -44,6 +45,7 @@ app.use("/api/budget", budgetCategoryRoutes);
 app.use("/api/goals", goalRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/savings", savingRoutes);
+app.use("/api/saving-goals", savingGoalRoutes);
 app.use("/api/parent", parentRoutes);
 
 // // Database Connection
