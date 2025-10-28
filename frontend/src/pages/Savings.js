@@ -4,6 +4,29 @@ import "./Savings.css";
 
 const currency = (n) => `$${Number(n || 0).toFixed(2)}`;
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const toMidnight = (d) => {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+};
+
+const daysFromToday = (dateStr) => {
+  if (!dateStr) return null;
+  const today = toMidnight(new Date());
+  const target = toMidnight(new Date(dateStr));
+  return Math.round((target.getTime() - today.getTime()) / MS_PER_DAY);
+};
+
+const remainingShort = (dateStr) => {
+  const d = daysFromToday(dateStr);
+  if (d === null) return "";
+  if (d > 0) return `${d}d left`;
+  if (d === 0) return "today";
+  return `${Math.abs(d)}d overdue`;
+};
+
 const Savings = () => {
   const userId = localStorage.getItem("userId");
 
@@ -26,33 +49,48 @@ const Savings = () => {
 
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [goalError, setGoalError] = useState("");
+  const [goalNotice, setGoalNotice] = useState("");
   const [submittingGoal, setSubmittingGoal] = useState(false);
   const [submittingSaving, setSubmittingSaving] = useState(false);
 
   const load = async () => {
     setError("");
     setNotice("");
-    const [g, s, sum] = await Promise.all([
-      savingService.getGoals(userId),
-      savingService.getSavings(userId),
-      savingService.getGoalSummaries(userId),
-    ]);
-    setGoals(g);
-    setSavings(s);
-    setSummaries(sum);
+    try {
+      const [g, s, sum] = await Promise.all([
+        savingService.getGoals(userId),
+        savingService.getSavings(userId),
+        savingService.getGoalSummaries(userId),
+      ]);
+      setGoals(g);
+      setSavings(s);
+      setSummaries(sum);
+    } catch {
+      setError("Failed to load data");
+    }
   };
 
   useEffect(() => {
-    if (userId) load().catch(() => setError("Failed to load data"));
+    if (userId) {
+      load().catch(() => setError("Failed to load data"));
+    }
   }, [userId]);
 
   const handleCreateGoal = async (e) => {
     e.preventDefault();
-    setError("");
-    setNotice("");
+    setGoalError("");
+    setGoalNotice("");
 
     if (!newGoal.title || !newGoal.targetAmount) {
-      setError("Please enter goal title and target amount.");
+      setGoalError("Please enter goal title and target amount.");
+      return;
+    }
+
+    const titleTrim = String(newGoal.title || "").trim();
+    const isDup = goals.some((g) => String(g.title || "").trim().toLowerCase() === titleTrim.toLowerCase());
+    if (isDup) {
+      setGoalError("A goal with this name already exists. Please choose a different name.");
       return;
     }
 
@@ -60,13 +98,14 @@ const Savings = () => {
     try {
       await savingService.createGoal(userId, {
         ...newGoal,
+        title: titleTrim,
         targetAmount: Number(newGoal.targetAmount || 0),
       });
       setNewGoal({ title: "", targetAmount: "", targetDate: "", description: "" });
-      setNotice("Goal created.");
+      setGoalNotice("Goal created.");
       await load();
     } catch {
-      setError("Failed to create goal");
+      setGoalError("Failed to create goal.");
     } finally {
       setSubmittingGoal(false);
     }
@@ -77,9 +116,14 @@ const Savings = () => {
     setError("");
     setNotice("");
 
-    if (!newSaving.goalId) return setError("Please select a goal.");
-    if (!newSaving.amount || Number(newSaving.amount) <= 0)
-      return setError("Amount must be greater than 0.");
+    if (!newSaving.goalId) {
+      setError("Please select a goal.");
+      return;
+    }
+    if (!newSaving.amount || Number(newSaving.amount) <= 0) {
+      setError("Amount must be greater than 0.");
+      return;
+    }
 
     setSubmittingSaving(true);
     try {
@@ -188,6 +232,12 @@ const Savings = () => {
             </button>
           </div>
         </form>
+
+        {(goalError || goalNotice) && (
+          <div className={`form-msg ${goalError ? "error" : "ok"}`}>
+            {goalError || goalNotice}
+          </div>
+        )}
       </section>
 
       <table className="table">
@@ -208,7 +258,18 @@ const Savings = () => {
                 <td>
                   {currency(g.saved)} / {currency(g.targetAmount)}
                 </td>
-                <td>{g.targetDate ? new Date(g.targetDate).toLocaleDateString() : "-"}</td>
+                <td>
+                  {g.targetDate ? (
+                    <>
+                      {new Date(g.targetDate).toLocaleDateString()}
+                      <small className="remaining-days" title={remainingShort(g.targetDate)}>
+                        {" "}· {remainingShort(g.targetDate)}
+                      </small>
+                    </>
+                  ) : (
+                    "-"
+                  )}
+                </td>
                 <td style={{ width: 220 }}>
                   <div className="progress">
                     <div
@@ -235,7 +296,7 @@ const Savings = () => {
 
       <hr className="section-divider" />
 
-      <h3 style={{ marginTop: 26 }}>Transactions</h3>
+      <h3 style={{ marginTop: 26 }}>Savings</h3>
       <section className="panel" style={{ marginTop: 16 }}>
         <div className="panel__head">
           <h3>Add Saving</h3>

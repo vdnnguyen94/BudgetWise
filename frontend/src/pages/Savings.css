@@ -123,6 +123,11 @@ input[type="date"]::-webkit-date-and-time-value{ line-height:var(--control-h); }
   background-color: #c0392b !important;
 }
 
+.remaining-days { color:#6b7280; margin-left:6px; font-size:12px; }
+.form-msg { margin-top:10px; font-size:14px; }
+.form-msg.ok { color:#27ae60; }
+.form-msg.error { color:#e74c3c; }
+
 @media (max-width:1080px){
   .goal-form, .saving-form{ grid-template-columns:repeat(3,1fr); }
 }
