@@ -1,24 +1,17 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import savingService from "../services/savingService";
 import "./Savings.css";
 
 const currency = (n) => `$${Number(n || 0).toFixed(2)}`;
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
-const toMidnight = (d) => {
-  const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x;
-};
-
+const toMidnight = (d) => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
 const daysFromToday = (dateStr) => {
   if (!dateStr) return null;
   const today = toMidnight(new Date());
   const target = toMidnight(new Date(dateStr));
   return Math.round((target.getTime() - today.getTime()) / MS_PER_DAY);
 };
-
 const remainingShort = (dateStr) => {
   const d = daysFromToday(dateStr);
   if (d === null) return "";
@@ -47,16 +40,14 @@ const Savings = () => {
     description: "",
   });
 
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const [goalError, setGoalError] = useState("");
-  const [goalNotice, setGoalNotice] = useState("");
   const [submittingGoal, setSubmittingGoal] = useState(false);
   const [submittingSaving, setSubmittingSaving] = useState(false);
+  const [deletingGoalId, setDeletingGoalId] = useState("");
+
+  const [goalMessage, setGoalMessage] = useState(null);
+  const [savingMessage, setSavingMessage] = useState(null);
 
   const load = async () => {
-    setError("");
-    setNotice("");
     try {
       const [g, s, sum] = await Promise.all([
         savingService.getGoals(userId),
@@ -67,30 +58,32 @@ const Savings = () => {
       setSavings(s);
       setSummaries(sum);
     } catch {
-      setError("Failed to load data");
+      setGoalMessage({ type: "error", text: "Failed to load data." });
     }
   };
 
   useEffect(() => {
-    if (userId) {
-      load().catch(() => setError("Failed to load data"));
-    }
+    if (userId) load().catch(() => setGoalMessage({ type: "error", text: "Failed to load data." }));
   }, [userId]);
 
   const handleCreateGoal = async (e) => {
     e.preventDefault();
-    setGoalError("");
-    setGoalNotice("");
+    setGoalMessage(null);
 
     if (!newGoal.title || !newGoal.targetAmount) {
-      setGoalError("Please enter goal title and target amount.");
+      setGoalMessage({ type: "error", text: "Please enter goal title and target amount." });
       return;
     }
 
     const titleTrim = String(newGoal.title || "").trim();
-    const isDup = goals.some((g) => String(g.title || "").trim().toLowerCase() === titleTrim.toLowerCase());
+    const isDup = goals.some(
+      (g) => String(g.title || "").trim().toLowerCase() === titleTrim.toLowerCase()
+    );
     if (isDup) {
-      setGoalError("A goal with this name already exists. Please choose a different name.");
+      setGoalMessage({
+        type: "error",
+        text: "A goal with this name already exists. Please choose a different name.",
+      });
       return;
     }
 
@@ -102,10 +95,10 @@ const Savings = () => {
         targetAmount: Number(newGoal.targetAmount || 0),
       });
       setNewGoal({ title: "", targetAmount: "", targetDate: "", description: "" });
-      setGoalNotice("Goal created.");
+      setGoalMessage({ type: "ok", text: "Goal created." });
       await load();
     } catch {
-      setGoalError("Failed to create goal.");
+      setGoalMessage({ type: "error", text: "Failed to create goal." });
     } finally {
       setSubmittingGoal(false);
     }
@@ -113,15 +106,14 @@ const Savings = () => {
 
   const handleAddSaving = async (e) => {
     e.preventDefault();
-    setError("");
-    setNotice("");
+    setSavingMessage(null);
 
     if (!newSaving.goalId) {
-      setError("Please select a goal.");
+      setSavingMessage({ type: "error", text: "Please select a goal." });
       return;
     }
     if (!newSaving.amount || Number(newSaving.amount) <= 0) {
-      setError("Amount must be greater than 0.");
+      setSavingMessage({ type: "error", text: "Amount must be greater than 0." });
       return;
     }
 
@@ -132,42 +124,45 @@ const Savings = () => {
         amount: Number(newSaving.amount || 0),
       });
       setNewSaving({ goalId: newSaving.goalId, amount: "", date: "", description: "" });
-      setNotice("Saving added.");
+      setSavingMessage({ type: "ok", text: "Saving added." });
       await load();
     } catch {
-      setError("Failed to add saving");
+      setSavingMessage({ type: "error", text: "Failed to add saving." });
     } finally {
       setSubmittingSaving(false);
     }
   };
 
   const handleDelete = async (savingId) => {
-    setError("");
-    setNotice("");
+    setSavingMessage(null);
     try {
       await savingService.deleteSaving(userId, savingId);
-      setNotice("Deleted.");
+      setSavingMessage({ type: "ok", text: "Saving deleted." });
       await load();
     } catch {
-      setError("Failed to delete saving");
+      setSavingMessage({ type: "error", text: "Failed to delete saving." });
     }
   };
 
-  const summaryTotals = useMemo(() => {
-    if (!summaries.length) return { target: 0, saved: 0, pct: 0 };
-    const target = summaries.reduce((a, g) => a + Number(g.targetAmount || 0), 0);
-    const saved = summaries.reduce((a, g) => a + Number(g.saved || 0), 0);
-    const pct = target > 0 ? Math.min(Math.round((saved / target) * 100), 100) : 0;
-    return { target, saved, pct };
-  }, [summaries]);
+  const handleDeleteGoal = async (goalId) => {
+    setGoalMessage(null);
+    const ok = window.confirm("Delete this goal and all related savings?");
+    if (!ok) return;
+    setDeletingGoalId(goalId);
+    try {
+      await savingService.deleteGoal(userId, goalId);
+      setGoalMessage({ type: "ok", text: "Goal deleted." });
+      await load();
+    } catch {
+      setGoalMessage({ type: "error", text: "Failed to delete goal." });
+    } finally {
+      setDeletingGoalId("");
+    }
+  };
 
   return (
     <div className="container">
       <h2>Savings</h2>
-
-      {(error || notice) && (
-        <div className={`alert ${error ? "error" : "ok"}`}>{error || notice}</div>
-      )}
 
       <h3 style={{ marginTop: 26 }}>Goals</h3>
       <section className="panel">
@@ -233,9 +228,9 @@ const Savings = () => {
           </div>
         </form>
 
-        {(goalError || goalNotice) && (
-          <div className={`form-msg ${goalError ? "error" : "ok"}`}>
-            {goalError || goalNotice}
+        {goalMessage && (
+          <div className={`form-msg ${goalMessage.type}`}>
+            {goalMessage.text}
           </div>
         )}
       </section>
@@ -248,6 +243,7 @@ const Savings = () => {
             <th>Target Date</th>
             <th>Progress</th>
             <th>Status</th>
+            <th style={{ width: 110 }}>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -255,9 +251,7 @@ const Savings = () => {
             summaries.map((g) => (
               <tr key={g._id}>
                 <td className="col-title">{g.title}</td>
-                <td>
-                  {currency(g.saved)} / {currency(g.targetAmount)}
-                </td>
+                <td>{currency(g.saved)} / {currency(g.targetAmount)}</td>
                 <td>
                   {g.targetDate ? (
                     <>
@@ -266,16 +260,11 @@ const Savings = () => {
                         {" "}· {remainingShort(g.targetDate)}
                       </small>
                     </>
-                  ) : (
-                    "-"
-                  )}
+                  ) : ("-")}
                 </td>
                 <td style={{ width: 220 }}>
                   <div className="progress">
-                    <div
-                      className="progress-bar"
-                      style={{ width: `${Math.round((g.progress || 0) * 100)}%` }}
-                    />
+                    <div className="progress-bar" style={{ width: `${Math.round((g.progress || 0) * 100)}%` }} />
                   </div>
                   <small className="muted">{Math.round((g.progress || 0) * 100)}%</small>
                 </td>
@@ -284,12 +273,19 @@ const Savings = () => {
                     {g.status || "On Track"}
                   </span>
                 </td>
+                <td>
+                  <button
+                    className="btn-danger btn-sm"
+                    onClick={() => handleDeleteGoal(g._id)}
+                    disabled={deletingGoalId === g._id}
+                  >
+                    {deletingGoalId === g._id ? "Deleting…" : "Delete"}
+                  </button>
+                </td>
               </tr>
             ))
           ) : (
-            <tr>
-              <td colSpan={5} className="empty">No goals yet. Create one above.</td>
-            </tr>
+            <tr><td colSpan={6} className="empty">No goals yet. Create one above.</td></tr>
           )}
         </tbody>
       </table>
@@ -312,9 +308,7 @@ const Savings = () => {
           >
             <option value="">Select a Goal</option>
             {goals.map((g) => (
-              <option key={g._id} value={g._id}>
-                {g.title}
-              </option>
+              <option key={g._id} value={g._id}>{g.title}</option>
             ))}
           </select>
 
@@ -365,6 +359,12 @@ const Savings = () => {
             </button>
           </div>
         </form>
+
+        {savingMessage && (
+          <div className={`form-msg ${savingMessage.type}`}>
+            {savingMessage.text}
+          </div>
+        )}
       </section>
 
       <table className="table">
@@ -388,7 +388,7 @@ const Savings = () => {
                   <td>{s.date ? new Date(s.date).toLocaleDateString() : "-"}</td>
                   <td className="muted">{s.description}</td>
                   <td>
-                    <button className="btn-danger" onClick={() => handleDelete(s._id)}>
+                    <button className="btn-danger btn-sm" onClick={() => handleDelete(s._id)}>
                       Delete
                     </button>
                   </td>
@@ -396,9 +396,7 @@ const Savings = () => {
               );
             })
           ) : (
-            <tr>
-              <td colSpan={5} className="empty">No savings found.</td>
-            </tr>
+            <tr><td colSpan={5} className="empty">No savings found.</td></tr>
           )}
         </tbody>
       </table>

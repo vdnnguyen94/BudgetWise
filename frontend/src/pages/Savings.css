@@ -128,6 +128,31 @@ input[type="date"]::-webkit-date-and-time-value{ line-height:var(--control-h); }
 .form-msg.ok { color:#27ae60; }
 .form-msg.error { color:#e74c3c; }
 
+.table td .btn-danger {
+  height: 30px;          
+  padding: 0 10px;       
+  font-size: 12px;      
+  line-height: 28px;      
+  border-radius: 8px;     
+}
+
+.table td .btn-danger:hover {
+  background-color: #c0392b !important;
+}
+
+.table td .btn-danger:disabled {
+  opacity: .7;
+  cursor: not-allowed;
+}
+
+.table td button {
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 28px;
+  border-radius: 8px;
+}
+
 @media (max-width:1080px){
   .goal-form, .saving-form{ grid-template-columns:repeat(3,1fr); }
 }
