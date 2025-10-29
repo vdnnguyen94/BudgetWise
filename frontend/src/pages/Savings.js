@@ -4,14 +4,24 @@ import "./Savings.css";
 
 const currency = (n) => `$${Number(n || 0).toFixed(2)}`;
 
+const toDateOnlyLocal = (s) => {
+  if (!s) return null;
+  const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/); 
+  if (!m) return new Date(s); 
+  const [, y, mm, dd] = m.map(Number);
+  return new Date(y, (mm || 1) - 1, dd || 1);
+};
+
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const toMidnight = (d) => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+
 const daysFromToday = (dateStr) => {
   if (!dateStr) return null;
   const today = toMidnight(new Date());
-  const target = toMidnight(new Date(dateStr));
+  const target = toMidnight(toDateOnlyLocal(dateStr)); 
   return Math.round((target.getTime() - today.getTime()) / MS_PER_DAY);
 };
+
 const remainingShort = (dateStr) => {
   const d = daysFromToday(dateStr);
   if (d === null) return "";
@@ -255,7 +265,7 @@ const Savings = () => {
                 <td>
                   {g.targetDate ? (
                     <>
-                      {new Date(g.targetDate).toLocaleDateString()}
+                      {toDateOnlyLocal(g.targetDate)?.toLocaleDateString() }
                       <small className="remaining-days" title={remainingShort(g.targetDate)}>
                         {" "}· {remainingShort(g.targetDate)}
                       </small>
@@ -385,7 +395,7 @@ const Savings = () => {
                 <tr key={s._id}>
                   <td className="col-title">{g ? g.title : "-"}</td>
                   <td>{currency(s.amount)}</td>
-                  <td>{s.date ? new Date(s.date).toLocaleDateString() : "-"}</td>
+                  <td>{s.date ? toDateOnlyLocal(s.date)?.toLocaleDateString() : "-" }</td>
                   <td className="muted">{s.description}</td>
                   <td>
                     <button className="btn-danger btn-sm" onClick={() => handleDelete(s._id)}>
