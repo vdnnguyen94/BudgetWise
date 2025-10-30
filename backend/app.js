@@ -15,6 +15,7 @@ import reportRoutes from './routes/reportRoutes.js';
 import savingRoutes from "./routes/savingRoutes.js";
 import savingGoalRoutes from "./routes/savingGoalRoutes.js";
 import parentRoutes from './routes/parentRoutes.js';
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -22,7 +23,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://budgetwise-mu.vercel.app'],
+  origin: ['http://localhost:3000','http://localhost:5173', 'https://budgetwise-mu.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -47,8 +48,9 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/savings", savingRoutes);
 app.use("/api/saving-goals", savingGoalRoutes);
 app.use("/api/parent", parentRoutes);
+app.use("/api/notifications", notificationRoutes);
 
-// // Database Connection
+//  Database Connection
 // mongoose.connect(process.env.MONGO_URI, {
 // }).then(() => console.log('MongoDB Connected'))
 //   .catch(err => console.log(err));

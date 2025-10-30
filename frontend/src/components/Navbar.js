@@ -8,11 +8,17 @@ import expense from "../assets/expense.png";
 import reports from "../assets/report.png";
 import income from "../assets/income.png";
 import goal from "../assets/goal.png";
+import bell from "../assets/bell.png";
+
+import axios from "../api/axios.js";
 
 
 const Navbar = ({ isAuthenticated, handleLogout }) => {
     const [active, setActive] = useState(0);
     const [userRole, setUserRole] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [notifications, setNotifications] = useState([]);
+    const [showNotifications, setShowNotifications] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -21,6 +27,45 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
         const role = localStorage.getItem('userRole');
         setUserRole(role);
     }, [isAuthenticated]); // Re-check when authentication changes
+
+  // Get user info
+  useEffect(() => {
+    const role = localStorage.getItem("userRole");
+    const id = localStorage.getItem("userId");
+    setUserRole(role);
+    setUserId(id);
+  }, [isAuthenticated]);
+
+  // Fetch notifications
+  const fetchNotifications = async () => {
+    try {
+      if (!userId) return;
+      const res = await axios.get(`/notifications/${userId}`);
+      setNotifications(res.data);
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+    }
+  };
+
+  // Load and auto-refresh notifications
+  useEffect(() => {
+    if (userId) fetchNotifications();
+    const interval = setInterval(() => {
+      if (userId) fetchNotifications();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [userId]);
+
+  const deleteNotification = async (id) => {
+  try {
+    await axios.delete(`/notifications/${id}`); // Make sure your backend route matches
+    setNotifications((prev) => prev.filter((n) => n._id !== id));
+  } catch (err) {
+    console.error("Error deleting notification:", err);
+  }
+    };
+
+
 
     useEffect(() => {
         switch (location.pathname) {
@@ -69,7 +114,8 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
         <>
             <nav className="navbar-top">
                 <div className="logo">BudgetWise</div>
-            </nav>
+            
+            
 
             <nav className="navbar">
                 <div className="logo-web">BudgetWise</div>
@@ -126,6 +172,57 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                 <button className="login-logout-button" onClick={handleAuthAction}>
                     {isAuthenticated ? "Logout" : "Login"}
                 </button>
+                {/* 🛎️ Notification Tab handling*/}
+        {isAuthenticated && (
+          <div className="notification-wrapper">
+            <img
+              src={bell}
+              alt="Notifications"
+              className="notification-bell"
+              onClick={() => setShowNotifications((prev) => !prev)}
+            />
+            {notifications.some((n) => !n.isRead) && (
+              <span className="notification-badge">
+                {notifications.filter((n) => !n.isRead).length}
+              </span>
+            )}
+
+            {/* Dropdown of notifications */}
+            {showNotifications && (
+              <div className="notification-dropdown">
+                <h4>Notifications</h4>
+                {notifications.length === 0 ? (
+                  <p className="empty">No notifications</p>
+                ) : (
+                  <ul>
+                    {notifications.map((n) => (
+                    <li
+                        key={n._id}
+                        className={`notification-item ${n.isRead ? "read" : "unread"}`}
+                    >
+                    <span
+                        className="notification-text"
+                    >
+                        {n.message}
+                    </span>
+                    <span className="timestamp">
+                        {new Date(n.createdAt).toLocaleString()}
+                    </span>
+                    <button
+                        className="delete-notification"
+                        onClick={() => deleteNotification(n._id)}
+                    >
+                    ✕
+                    </button>
+                </li>
+            ))}
+            </ul>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </nav>
             </nav>
         </>
     );

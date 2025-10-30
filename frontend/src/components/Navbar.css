@@ -1,4 +1,30 @@
 /* Top Navbar */
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: black; /* makes text black */
+  padding: 5px 10px;
+}
+
+.notification-text {
+  cursor: pointer;
+  flex: 1;
+}
+
+.delete-notification {
+  background: transparent;
+  border: none;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.notification-item.read .notification-text {
+  opacity: 0.6; /* optional: dim read notifications */
+}
 .navbar-top {
     display: flex;
     justify-content: center;
@@ -201,4 +227,6 @@
     .login-logout-button:active {
         transform: scale(0.95);
     }
+
+    
 }

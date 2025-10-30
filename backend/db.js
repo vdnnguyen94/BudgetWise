@@ -2,11 +2,15 @@
 import mongoose from 'mongoose';
 
 const MONGO_URI = process.env.MONGO_URI;
-let cachedDb = null;
+let cachedDb = global.mongoose;
+
+if (!cachedDb) {
+  cachedDb = global.mongoose = { conn: null, promise: null };
+}
 
 async function connectToDatabase() {
-  if (cachedDb) {
-    return cachedDb;
+  if (cachedDb.conn) {
+    return cachedDb.conn;
   }
   try {
     const db = await mongoose.connect(MONGO_URI, {});

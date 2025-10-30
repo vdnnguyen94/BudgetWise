@@ -2,6 +2,7 @@ import Expense from "../models/Expense.js";
 import BudgetCategory from '../models/BudgetCategory.js';
 import Goal from "../models/Goal.js";
 import User from '../models/user.js';
+import Notification from "../models/notification.js";
 
 
 // Function to get start and end of month
@@ -70,6 +71,14 @@ export const createExpense = async (req, res) => {
             paymentMethod // Save paymentMethod
         });
         await expense.save();
+
+        const notification = new Notification({
+            userId: req.params.userId,
+            message: `New expense of $${amount.toFixed(2)} added in category "${category.name}".`,
+            type: "expense"
+        });
+        console.log("✅ Expense saved, creating notification for user", req.params.userId);
+        await notification.save();
 
         if (goalId) {
             const goal = await Goal.findById(goalId);
