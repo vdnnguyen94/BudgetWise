@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import incomeService from "../services/incomeService";
 import "./Income.css";
+import { toast } from "react-toastify"; 
 
 const Income = () => {
     const userId = localStorage.getItem("userId");
     const [incomeList, setIncomeList] = useState([]);
+    const [editingId, setEditingId] = useState(null);
     const [newIncome, setNewIncome] = useState({
         source: "",
         amount: "",
@@ -40,6 +42,7 @@ const Income = () => {
             };
 
             await incomeService.createIncome(userId, incomeToAdd);
+            toast.success("Income added successfully"); 
             setNewIncome({ source: "", amount: "", date: "", description: "", recurrence: "one-time" });
             fetchIncome();
         } catch (error) {
@@ -50,11 +53,37 @@ const Income = () => {
     const handleDeleteIncome = async (incomeId) => {
         try {
             await incomeService.deleteIncome(userId, incomeId);
+            toast.success("Income deleted successfully");
             fetchIncome();
         } catch (error) {
             setError("Failed to delete income.");
         }
     };
+
+    const handleUpdateIncome = async (incomeId, updatedIncome) => {
+        try {
+            const formatted = { ...updatedIncome, amount: parseFloat(updatedIncome.amount) };
+            await incomeService.updateIncome(userId, incomeId, formatted);
+            toast.success("Income updated successfully");
+            setEditingId(null); 
+            fetchIncome();
+        } catch {
+            setError("Failed to update income.");
+        }
+    };
+
+    const handleEditClick = (id) => {
+        setEditingId(id);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingId(null);
+        fetchIncome();
+    };
+
+    const totalSalary = incomeList
+        .filter((i) => i.source === "Salary")
+        .reduce((sum, i) => sum + i.amount, 0);
 
     return (
         <div className="income-container">
@@ -63,7 +92,10 @@ const Income = () => {
 
             <div className="summary-box">
                 <h3>Total Income: ${totalIncome.toFixed(2)}</h3>
+                <p>Salary: ${totalSalary.toFixed(2)}</p>
+                <p>Other Income: ${(totalIncome - totalSalary).toFixed(2)}</p>
             </div>
+
 
             <h2>Add New Income</h2>
             <form onSubmit={handleAddIncome}>
@@ -114,8 +146,9 @@ const Income = () => {
                     onChange={(e) => setNewIncome({ ...newIncome, recurrence: e.target.value })}
                 >
                     <option value="one-time">One-Time</option>
-                    <option value="monthly">Monthly</option>
                     <option value="weekly">Weekly</option>
+                    <option value="biweekly">Biweekly</option>
+                    <option value="monthly">Monthly</option>
                 </select>
 
                 <button type="submit">Add Income</button>
@@ -138,17 +171,103 @@ const Income = () => {
                         incomeList.map((inc) => (
                             <tr key={inc._id}>
                                 <td>{inc.source}</td>
-                                <td>{inc.amount.toFixed(2)}</td>
+                                <td>
+                                    {editingId === inc._id ? (
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={inc.amount}
+                                            onChange={(e) =>
+                                                setIncomeList((prev) =>
+                                                    prev.map((i) =>
+                                                        i._id === inc._id
+                                                            ? { ...i, amount: e.target.value }
+                                                            : i
+                                                    )
+                                                )
+                                            }
+                                        />
+                                    ) : (
+                                        inc.amount.toFixed(2)
+                                    )}
+                                </td>
                                 <td>{new Date(inc.date).toLocaleDateString()}</td>
                                 <td>{inc.description || "-"}</td>
-                                <td>{inc.recurrence}</td>
                                 <td>
-                                    <button
-                                        className="delete-btn"
-                                        onClick={() => handleDeleteIncome(inc._id)}
-                                    >
-                                        Delete
-                                    </button>
+                                    {editingId === inc._id ? (
+                                        <select
+                                            value={inc.recurrence}
+                                            onChange={(e) =>
+                                                setIncomeList((prev) =>
+                                                    prev.map((i) =>
+                                                        i._id === inc._id
+                                                            ? { ...i, recurrence: e.target.value }
+                                                            : i
+                                                    )
+                                                )
+                                            }
+                                        >
+                                            <option value="one-time">One-Time</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="biweekly">Biweekly</option>
+                                            <option value="monthly">Monthly</option>
+                                        </select>
+                                    ) : (
+                                        inc.recurrence
+                                    )}
+                                </td>
+                                <td>
+                                    {editingId === inc._id ? (
+                                        <>
+                                            <button
+                                                onClick={() => handleUpdateIncome(inc._id, inc)}
+                                                style={{
+                                                    backgroundColor: "#007bff",
+                                                    color: "white",
+                                                    border: "none",
+                                                    padding: "5px 10px",
+                                                    borderRadius: "5px",
+                                                    marginRight: "6px",
+                                                }}
+                                            >
+                                                Update
+                                            </button>
+                                            <button
+                                                onClick={handleCancelEdit}
+                                                style={{
+                                                    backgroundColor: "gray",
+                                                    color: "white",
+                                                    border: "none",
+                                                    padding: "5px 10px",
+                                                    borderRadius: "5px",
+                                                }}
+                                            >
+                                                Cancel
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={() => handleEditClick(inc._id)}
+                                                style={{
+                                                    backgroundColor: "#007bff",
+                                                    color: "white",
+                                                    border: "none",
+                                                    padding: "5px 10px",
+                                                    borderRadius: "5px",
+                                                    marginRight: "6px",
+                                                }}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                className="delete-btn"
+                                                onClick={() => handleDeleteIncome(inc._id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </>
+                                    )}
                                 </td>
                             </tr>
                         ))
@@ -158,6 +277,7 @@ const Income = () => {
                         </tr>
                     )}
                 </tbody>
+
             </table>
         </div>
     );
