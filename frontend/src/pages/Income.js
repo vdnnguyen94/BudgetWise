@@ -82,8 +82,8 @@ const Income = () => {
     };
 
     const totalSalary = incomeList
-        .filter((i) => i.source === "Salary")
-        .reduce((sum, i) => sum + i.amount, 0);
+    .filter((i) => i.source === "Salary")
+    .reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
 
     return (
         <div className="income-container">
@@ -91,9 +91,9 @@ const Income = () => {
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             <div className="summary-box">
-                <h3>Total Income: ${totalIncome.toFixed(2)}</h3>
-                <p>Salary: ${totalSalary.toFixed(2)}</p>
-                <p>Other Income: ${(totalIncome - totalSalary).toFixed(2)}</p>
+                <h3>Total Income: ${(Number(totalIncome) || 0).toFixed(2)}</h3>
+                <p>Salary: {(Number(totalSalary) || 0).toFixed(2)}</p>
+                <p>Other Income: {((Number(totalIncome) || 0) - (Number(totalSalary) || 0)).toFixed(2)}</p>
             </div>
 
 
@@ -188,7 +188,7 @@ const Income = () => {
                                             }
                                         />
                                     ) : (
-                                        inc.amount.toFixed(2)
+                                        (parseFloat(inc.amount) || 0).toFixed(2)
                                     )}
                                 </td>
                                 <td>{new Date(inc.date).toLocaleDateString()}</td>
