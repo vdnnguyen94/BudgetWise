@@ -14,7 +14,7 @@ const incomeService = {
         }
     },
 
-    createIncome: async (userId, incomeData) => {
+    /*createIncome: async (userId, incomeData) => {
         try {
             const response = await fetch(`${API_URL}/api/income/${userId}`, {
                 method: "POST",
@@ -28,7 +28,35 @@ const incomeService = {
             console.error("Error creating income:", error);
             return null;
         }
+    },*/
+
+    createIncome: async (userId, incomeData) => {
+        try {
+            const response = await fetch(`${API_URL}/api/income/${userId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token") || ""}`
+            },
+            body: JSON.stringify(incomeData),
+            });
+
+            // Check if the request succeeded
+            if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.message || `Failed to add income (HTTP ${response.status})`);
+            }
+
+            const data = await response.json();
+            console.log("Created Income:", data);
+            return data; 
+
+        } catch (error) {
+            console.error("Error creating income:", error);
+            throw error;
+        }
     },
+
 
     getSingleIncome: async (userId, incomeId) => {
         try {

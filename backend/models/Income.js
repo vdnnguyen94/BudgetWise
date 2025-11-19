@@ -6,7 +6,7 @@ const IncomeSchema = new mongoose.Schema({
    amount: { type: Number, required: true },
    description: { type: String },
    date: { type: Date, default: Date.now },
-   recurrence: { type: String, enum: ["one-time", "monthly", "weekly"], default: "one-time" } 
+   recurrence: { type: String, enum: ["one-time", "weekly", "biweekly", "monthly"], default: "one-time" }
 });
 
 const Income = mongoose.model("Income", IncomeSchema);
