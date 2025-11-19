@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+// @ts-ignore
 import home from "../assets/home.png";
+// @ts-ignore
 import budget from "../assets/budget.png";
+// @ts-ignore
 import user from "../assets/user.png";
+// @ts-ignore
 import expense from "../assets/expense.png";
+// @ts-ignore
 import reports from "../assets/report.png";
+// @ts-ignore
 import income from "../assets/income.png";
+// @ts-ignore
 import goal from "../assets/goal.png";
 
 
@@ -51,8 +58,11 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
             case "/parent-dashboard":
                 setActive(8);
                 break;
-            default:
+            case "/ai-chat":
                 setActive(9);
+                break;    
+            default:
+                setActive(10);
         }
     }, [location]);
 
@@ -112,6 +122,11 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                 <Link to="/goals" className={`nav-item ${active === 7 ? "active" : ""}`}>
                     <img src={goal} alt="Goals" />
                     <span>Goals</span>
+                </Link>
+
+                <Link to="/ai-chat" className={`nav-item ${active === 9 ? "active" : ""}`}>
+                    <span style={{fontSize: '28px'}}>🤖</span>
+                    <span>AI Assistant</span>
                 </Link>
 
                 {/* Show Manage Children link only for Parent role users */}
