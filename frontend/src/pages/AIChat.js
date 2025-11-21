@@ -1,7 +1,9 @@
-// frontend/src/pages/AIChat.js
 import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import './AIChat.css';
+
+// Use environment variable for API URL
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const AIChat = () => {
   const [messages, setMessages] = useState([]);
@@ -45,7 +47,7 @@ const AIChat = () => {
   const fetchSummary = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/chat/summary', {
+      const response = await fetch(`${API_URL}/api/chat/summary`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -76,7 +78,7 @@ const AIChat = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/chat/message', {
+      const response = await fetch(`${API_URL}/api/chat/message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
