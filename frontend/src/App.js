@@ -14,6 +14,8 @@ import MonthlyReport from './pages/ReportPage';
 import Savings from "./pages/Savings";
 import ParentDashboard from './pages/ParentDashboard';
 import ProtectedRoute from './components/ProtectedRoutes';
+import AIChat from './pages/AIChat';
+
 
 
 
@@ -91,6 +93,11 @@ function App() {
             <Route path="/report" element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <MonthlyReport />
+              </ProtectedRoute>
+            }/>
+            <Route path="/ai-chat" element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <AIChat />
               </ProtectedRoute>
             }/>
     

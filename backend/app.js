@@ -15,6 +15,7 @@ import reportRoutes from './routes/reportRoutes.js';
 import savingRoutes from "./routes/savingRoutes.js";
 import savingGoalRoutes from "./routes/savingGoalRoutes.js";
 import parentRoutes from './routes/parentRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -47,6 +48,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/savings", savingRoutes);
 app.use("/api/saving-goals", savingGoalRoutes);
 app.use("/api/parent", parentRoutes);
+app.use('/api/chat', chatRoutes);
 
 // // Database Connection
 // mongoose.connect(process.env.MONGO_URI, {
