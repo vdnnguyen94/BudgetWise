@@ -15,12 +15,12 @@ export const getReport = async (req, res) => {
     const [incomes, expenses, budget] = await Promise.all([
       Income.find({ userId, date: { $gte: start, $lte: end } }),
       Expense.find({ userId, date: { $gte: start, $lte: end } }).populate("categoryId"),
-      Budget.findOne({ userId })
+      Budget.findOne({ userId }),
     ]);
 
-    const totalIncome = incomes.reduce((sum, i) => sum + i.amount, 0);
-    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-    const totalBudget = budget?.totalBudget || 0;
+    const totalIncome = incomes.reduce((sum, i) => sum + Number(i.amount || 0), 0);
+    const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+    const totalBudget = Number(budget?.totalBudget || 0);
     const balance = totalIncome - totalBudget;
     const remaining = totalIncome - totalExpenses;
 
@@ -28,37 +28,46 @@ export const getReport = async (req, res) => {
     if (budget?._id) {
       const categories = await BudgetCategory.find({ budgetId: budget._id });
 
-      categoryStats = categories.map(cat => {
+      categoryStats = categories.map((cat) => {
         const spent = expenses
-          .filter(e => e.categoryId?._id?.toString() === cat._id.toString())
-          .reduce((sum, e) => sum + e.amount, 0);
+          .filter((e) => e.categoryId?._id?.toString() === cat._id.toString())
+          .reduce((sum, e) => sum + Number(e.amount || 0), 0);
 
         return {
           name: cat.name,
-          limit: cat.limit,
+          limit: Number(cat.limit || 0),
           spent,
-          remaining: cat.limit - spent
+          remaining: Number(cat.limit || 0) - spent,
         };
       });
     }
 
     const transactions = [
-      ...incomes.map(i => ({
+      ...incomes.map((i) => ({
         type: "income",
-        amount: i.amount,
+        amount: Number(i.amount || 0),
         source: i.source,
         description: i.description,
-        date: i.date
+        date: i.date,
       })),
-      ...expenses.map(e => ({
-        type: "expense",
-        amount: e.amount,
-        category: e.categoryId?.name || "Uncategorized",
-        description: e.description,
-        paymentMethod: e.paymentMethod,
-        date: e.date
-      }))
-    ].sort((a, b) => new Date(b.date) - new Date(a.date));
+      ...expenses.map((e) => {
+        const cat =
+          e?.categoryId && typeof e.categoryId === "object" && "name" in e.categoryId
+            ? e.categoryId.name
+            : "Uncategorized";
+
+        return {
+          type: "expense",
+          amount: Number(e.amount || 0),
+          category: cat,
+          description: e.description,
+          paymentMethod: e.paymentMethod,
+          date: e.date,
+        };
+      }),
+    ].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
 
     res.json({
       balance,
@@ -66,12 +75,11 @@ export const getReport = async (req, res) => {
         totalIncome,
         totalBudget,
         totalExpenses,
-        remaining
+        remaining,
       },
       budgets: categoryStats,
-      transactions
+      transactions,
     });
-
   } catch (error) {
     console.error("Error generating report:", error);
     res.status(500).json({ message: "Failed to generate report", error: error.message });

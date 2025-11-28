@@ -29,6 +29,20 @@ const goalService = {
             method: "DELETE",
         });
     },
+
+    contributeGoal: async (userId, goalId, amount) => {
+        const response = await fetch(`${API_URL}/api/goals/${userId}/${goalId}/contribute`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount })
+        });
+        return response.json();
+    },
+
+    checkAlerts: async (userId) => {
+        const res = await fetch(`${API_URL}/api/goals/${userId}/check-alerts`);
+        return res.json();
+    },
 };
 
 export default goalService;

@@ -174,10 +174,10 @@ const Savings = () => {
     <div className="container">
       <h2>Savings</h2>
 
-      <h3 style={{ marginTop: 26 }}>Goals</h3>
+      <h3 style={{ marginTop: 26 }}>Savings Goals</h3>
       <section className="panel">
         <div className="panel__head">
-          <h3>Create Goal</h3>
+          <h3>Create Savings Goal</h3>
         </div>
 
         <form onSubmit={handleCreateGoal} className="goal-form" autoComplete="off">
