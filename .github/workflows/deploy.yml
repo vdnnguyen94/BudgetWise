@@ -1,4 +1,4 @@
-name: Deploy to AWS Lambda
+name: Deploy to Google Cloud Functions
 
 on:
   push:
@@ -9,38 +9,38 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
+      id-token: write # Required for Workload Identity Federation
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm ci
+      # Install dependencies locally to ensure package-lock.json is generated/correct
+      - name: Install Dependencies
+        run: npm install
         working-directory: ./backend
 
-      - name: Check AWS_ROLE_ARN is set
-        run: |
-          if [ -z "${{ secrets.AWS_ROLE_ARN }}" ]; then
-            echo "Secret AWS_ROLE_ARN is missing!" && exit 1
-          else
-            echo "Secret AWS_ROLE_ARN is set."
-          fi
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      # Authenticate to Google Cloud using the Identity Pool we created
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
         with:
-          # Corrected indentation here (2 spaces)
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: us-east-2
+          workload_identity_provider: '${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}'
+          service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
 
-      - name: Deploy with Serverless Framework
-        run: npx serverless deploy
-        working-directory: ./backend
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-
+      # Deploy the function to Google Cloud
+      - id: 'deploy'
+        name: 'Deploy Function'
+        uses: 'google-github-actions/deploy-cloud-functions@v2'
+        with:
+          name: 'budgetwise-api'       # Name of the function in Google Cloud
+          runtime: 'nodejs20'          # Node.js version
+          entry_point: 'api'           # Must match the http('api', ...) in index.js
+          region: 'us-central1'        # Region
+          source_dir: './backend'      # Where your code lives
+          # Pass environment variables to the function
+          env_vars: |-
+            MONGO_URI=${{ secrets.MONGO_URI }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            HUGGINGFACE_API_KEY=${{ secrets.HUGGINGFACE_API_KEY }}
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            NODE_ENV=production
