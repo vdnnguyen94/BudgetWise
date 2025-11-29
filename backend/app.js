@@ -50,35 +50,20 @@ app.use("/api/saving-goals", savingGoalRoutes);
 app.use("/api/parent", parentRoutes);
 app.use('/api/chat', chatRoutes);
 
-// // Database Connection
-// mongoose.connect(process.env.MONGO_URI, {
-// }).then(() => console.log('MongoDB Connected'))
-//   .catch(err => console.log(err));
+// --- DATABASE CONNECTION ONLY ---
+// We do NOT call app.listen() here for Google Cloud.
+// index.js handles the connection and request passing.
 
-// if (process.env.IS_OFFLINE) {
-//   const PORT = process.env.PORT || 5000;
-//   app.listen(PORT, () => {
-//     console.log(`Server is running at http://localhost:${PORT}`);
-//   });
-// }
-
-const PORT = process.env.PORT || 5000;
-
-(async () => {
-  try {
-    if (!process.env.MONGO_URI) throw new Error('MONGO_URI is not set');
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('MongoDB Connected');
-
-    if (process.env.NODE_ENV !== 'test') {
-      app.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
-      });
-    }
-  } catch (err) {
-    console.error('Startup error:', err);
-    process.exit(1);
-  }
-})();
+// Optional: Keep this strictly for local "node app.js" testing, 
+// but ensure it doesn't run when imported by index.js
+if (process.argv[1] === import.meta.url) {
+    const PORT = process.env.PORT || 5000;
+    mongoose.connect(process.env.MONGO_URI)
+        .then(() => {
+            console.log('MongoDB Connected');
+            app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+        })
+        .catch(err => console.log(err));
+}
 
 export default app;
