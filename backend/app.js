@@ -16,6 +16,7 @@ import savingRoutes from "./routes/savingRoutes.js";
 import savingGoalRoutes from "./routes/savingGoalRoutes.js";
 import parentRoutes from './routes/parentRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -49,6 +50,7 @@ app.use("/api/savings", savingRoutes);
 app.use("/api/saving-goals", savingGoalRoutes);
 app.use("/api/parent", parentRoutes);
 app.use('/api/chat', chatRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
 
 // --- DATABASE CONNECTION ONLY ---
 // We do NOT call app.listen() here for Google Cloud.

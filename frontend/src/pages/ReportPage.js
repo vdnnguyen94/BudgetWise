@@ -11,8 +11,16 @@ import {
   ArcElement,
 } from "chart.js";
 import "./ReportPage.css";
+import parentService from "../services/parentService"; 
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement);
+ChartJS.register(
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const currency = (n) =>
   (Number.isFinite(Number(n)) ? Number(n) : 0).toLocaleString(undefined, {
@@ -32,16 +40,35 @@ export default function ReportPage() {
   const [report, setReport] = useState(null);
   const [error, setError] = useState("");
 
+  const [children, setChildren] = useState([]); 
+  const [selectedUserId, setSelectedUserId] = useState(userId); 
+
+  // load report for the currently selected account (parent or child)
   useEffect(() => {
     (async () => {
       try {
-        const data = await reportService.getReport(userId, month);
+        setError("");
+        const data = await reportService.getReport(selectedUserId, month); 
         setReport(data);
       } catch (e) {
+        setReport(null);
         setError("Failed to load report.");
       }
     })();
-  }, [month, userId]);
+  }, [month, selectedUserId]); 
+
+  // if parent, fetch child accounts for dropdown
+  useEffect(() => {
+    if (userRole !== "Parent") return; 
+    (async () => {
+      try {
+        const data = await parentService.getChildren(); 
+        setChildren(data.children || []); 
+      } catch (e) {
+        console.error("Failed to load children for reports:", e); 
+      }
+    })();
+  }, [userRole]); 
 
   const incomeBreakdown = useMemo(() => {
     if (!report) return { labels: [], totals: [], table: [] };
@@ -59,7 +86,11 @@ export default function ReportPage() {
   }, [report]);
 
   const expenseBreakdowns = useMemo(() => {
-    if (!report) return { byCategory: { labels: [], totals: [] }, byMethod: { labels: [], totals: [] } };
+    if (!report)
+      return {
+        byCategory: { labels: [], totals: [] },
+        byMethod: { labels: [], totals: [] },
+      };
     const cat = new Map();
     const pm = new Map();
     for (const tx of report.transactions || []) {
@@ -70,8 +101,14 @@ export default function ReportPage() {
         pm.set(m, (pm.get(m) || 0) + Number(tx.amount || 0));
       }
     }
-    const byCategory = { labels: Array.from(cat.keys()), totals: Array.from(cat.values()) };
-    const byMethod = { labels: Array.from(pm.keys()), totals: Array.from(pm.values()) };
+    const byCategory = {
+      labels: Array.from(cat.keys()),
+      totals: Array.from(cat.values()),
+    };
+    const byMethod = {
+      labels: Array.from(pm.keys()),
+      totals: Array.from(pm.values()),
+    };
     return { byCategory, byMethod };
   }, [report]);
 
@@ -81,7 +118,11 @@ export default function ReportPage() {
     for (const tx of report.transactions || []) {
       if (tx.type !== "expense") continue;
       const d = new Date(tx.date);
-      const key = new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString().slice(0, 10);
+      const key = new Date(
+        d.getFullYear(),
+        d.getMonth(),
+        d.getDate()
+      ).toISOString().slice(0, 10);
       dayMap.set(key, (dayMap.get(key) || 0) + Number(tx.amount || 0));
     }
     const points = Array.from(dayMap.entries())
@@ -94,7 +135,8 @@ export default function ReportPage() {
   const kpis = useMemo(() => {
     if (!report) return null;
     const { totalIncome, totalExpenses, totalBudget, remaining } = report.summary;
-    const savingsRate = Number(totalIncome) > 0 ? (remaining / totalIncome) * 100 : 0;
+    const savingsRate =
+      Number(totalIncome) > 0 ? (remaining / totalIncome) * 100 : 0;
     return {
       totalIncome,
       totalExpenses,
@@ -117,7 +159,9 @@ export default function ReportPage() {
         {
           label: "Spent",
           data: report?.budgets.map((b) => b.spent) || [],
-          backgroundColor: report?.budgets.map((b) => (b.spent > b.limit ? "#dc3545" : "#007bff")) || [],
+          backgroundColor:
+            report?.budgets.map((b) => (b.spent > b.limit ? "#dc3545" : "#007bff")) ||
+            [],
         },
       ],
     }),
@@ -130,7 +174,16 @@ export default function ReportPage() {
       datasets: [
         {
           data: incomeBreakdown.totals,
-          backgroundColor: ["#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f", "#edc949", "#af7aa1", "#ff9da7"],
+          backgroundColor: [
+            "#4e79a7",
+            "#f28e2b",
+            "#e15759",
+            "#76b7b2",
+            "#59a14f",
+            "#edc949",
+            "#af7aa1",
+            "#ff9da7",
+          ],
         },
       ],
     }),
@@ -157,24 +210,51 @@ export default function ReportPage() {
       datasets: [
         {
           data: expenseBreakdowns.byMethod.totals,
-          backgroundColor: ["#2ca02c", "#1f77b4", "#ff7f0e", "#d62728", "#9467bd", "#8c564b"],
+          backgroundColor: [
+            "#2ca02c",
+            "#1f77b4",
+            "#ff7f0e",
+            "#d62728",
+            "#9467bd",
+            "#8c564b",
+          ],
         },
       ],
     }),
     [expenseBreakdowns]
   );
 
-const addMonths = (ym, delta) => {
-  const [Y, M] = ym.split("-").map(Number); 
-  let mm = (M - 1) + delta;                 
-  let y = Y + Math.floor(mm / 12);
-  mm = ((mm % 12) + 12) % 12;               
-  return `${y}-${String(mm + 1).padStart(2, "0")}`;
-};
+  const addMonths = (ym, delta) => {
+    const [Y, M] = ym.split("-").map(Number);
+    let mm = M - 1 + delta;
+    let y = Y + Math.floor(mm / 12);
+    mm = ((mm % 12) + 12) % 12;
+    return `${y}-${String(mm + 1).padStart(2, "0")}`;
+  };
 
   return (
     <div className="report-page">
       <h2>Financial Report</h2>
+
+      {/* changed: who’s report are we viewing (parent or child) */}
+      {userRole === "Parent" && (
+        <div className="child-selector">
+          <label htmlFor="child-select">View account:</label>
+          <select
+            id="child-select"
+            value={selectedUserId}
+            onChange={(e) => setSelectedUserId(e.target.value)}
+          >
+            <option value={userId}>My Account</option>
+            {children.map((child) => (
+              <option key={child._id} value={child._id}>
+                {child.username || child.email}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div className="month-selector" role="group" aria-label="Select month">
         <button
           type="button"
@@ -185,7 +265,9 @@ const addMonths = (ym, delta) => {
           ◀
         </button>
         <div className="month-input">
-          <label htmlFor="report-month" className="sr-only">Select Month</label>
+          <label htmlFor="report-month" className="sr-only">
+            Select Month
+          </label>
           <input
             id="report-month"
             type="month"
@@ -206,7 +288,9 @@ const addMonths = (ym, delta) => {
           className="month-reset"
           onClick={() => {
             const t = new Date();
-            setMonth(`${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}`);
+            setMonth(
+              `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}`
+            );
           }}
           aria-label="Reset to current month"
           title="Back to current month"
@@ -218,28 +302,45 @@ const addMonths = (ym, delta) => {
       {error && <p className="error">{error}</p>}
       {!report && !error && <p>Loading...</p>}
 
-      {report && (
+      {report && kpis && (
         <>
           <div className="card">
             <h3>💼 Financial Summary</h3>
             <div className="summary-grid">
-              <div className="summary-item">Balance: {currency(kpis.balance)}</div>
-              <div className="summary-item">Total Income: {currency(kpis.totalIncome)}</div>
-              <div className="summary-item">Total Budget: {currency(kpis.totalBudget)}</div>
-              <div className="summary-item">Total Expenses: {currency(kpis.totalExpenses)}</div>
-              <div className="summary-item">Remaining: {currency(kpis.remaining)}</div>
-              <div className="summary-item">Savings Rate: {kpis.savingsRate.toFixed(1)}%</div>
+              <div className="summary-item">
+                Balance: {currency(kpis.balance)}
+              </div>
+              <div className="summary-item">
+                Total Income: {currency(kpis.totalIncome)}
+              </div>
+              <div className="summary-item">
+                Total Budget: {currency(kpis.totalBudget)}
+              </div>
+              <div className="summary-item">
+                Total Expenses: {currency(kpis.totalExpenses)}
+              </div>
+              <div className="summary-item">
+                Remaining: {currency(kpis.remaining)}
+              </div>
+              <div className="summary-item">
+                Savings Rate: {kpis.savingsRate.toFixed(1)}%
+              </div>
             </div>
           </div>
 
           <div className="card">
             <h3>💰 Income Breakdown</h3>
             <div className="two-col">
-              <div className="chart-container"><Pie data={incomePieData} /></div>
+              <div className="chart-container">
+                <Pie data={incomePieData} />
+              </div>
               <div>
                 <table className="budget-table">
                   <thead>
-                    <tr><th>Source</th><th>Amount</th></tr>
+                    <tr>
+                      <th>Source</th>
+                      <th>Amount</th>
+                    </tr>
                   </thead>
                   <tbody>
                     {incomeBreakdown.table.map((row) => (
@@ -256,16 +357,25 @@ const addMonths = (ym, delta) => {
 
           <div className="card">
             <h3>🎯 Budget by Category</h3>
-            <div className="chart-container"><Bar data={budgetBarData} /></div>
+            <div className="chart-container">
+              <Bar data={budgetBarData} />
+            </div>
             <table className="budget-table">
               <thead>
                 <tr>
-                  <th>Category</th><th>Limit</th><th>Spent</th><th>Remaining</th><th>Status</th>
+                  <th>Category</th>
+                  <th>Limit</th>
+                  <th>Spent</th>
+                  <th>Remaining</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {report.budgets.map((b, i) => (
-                  <tr key={i} className={b.spent > b.limit ? "over-budget" : ""}>
+                  <tr
+                    key={i}
+                    className={b.spent > b.limit ? "over-budget" : ""}
+                  >
                     <td>{b.name}</td>
                     <td>{currency(b.limit)}</td>
                     <td>{currency(b.spent)}</td>
@@ -280,12 +390,17 @@ const addMonths = (ym, delta) => {
           <div className="card">
             <h3>🧾 Expense Report</h3>
             <div className="two-col">
-              <div className="chart-container"><Bar data={expenseCatBarData} /></div>
-              <div className="chart-container"><Pie data={expenseMethodPieData} /></div>
+              <div className="chart-container">
+                <Bar data={expenseCatBarData} />
+              </div>
+              <div className="chart-container">
+                <Pie data={expenseMethodPieData} />
+              </div>
             </div>
             {dailySpend.top && (
               <p style={{ marginTop: 12 }}>
-                <strong>Top Spending Day:</strong> {dailySpend.top.day} — {currency(dailySpend.top.amt)}
+                <strong>Top Spending Day:</strong> {dailySpend.top.day} —{" "}
+                {currency(dailySpend.top.amt)}
               </p>
             )}
           </div>
@@ -296,13 +411,19 @@ const addMonths = (ym, delta) => {
               {report.transactions.map((tx, i) => (
                 <div key={i} className={`transaction-entry ${tx.type}`}>
                   <div className="transaction-description">
-                    <strong>{tx.type.toUpperCase()}</strong> • {currency(tx.amount)}
-                    {tx.type === "income" && tx.source ? ` • ${tx.source}` : ""}
-                    {tx.type === "expense" && tx.category ? ` • ${tx.category}` : ""}
+                    <strong>{tx.type.toUpperCase()}</strong> •{" "}
+                    {currency(tx.amount)}
+                    {tx.type === "income" && tx.source
+                      ? ` • ${tx.source}`
+                      : ""}
+                    {tx.type === "expense" && tx.category
+                      ? ` • ${tx.category}`
+                      : ""}
                     {tx.description ? ` • ${tx.description}` : ""}
                   </div>
                   <div className="transaction-date">
-                    {new Date(tx.date).toLocaleDateString()} {tx.paymentMethod ? `• ${tx.paymentMethod}` : ""}
+                    {new Date(tx.date).toLocaleDateString()}{" "}
+                    {tx.paymentMethod ? `• ${tx.paymentMethod}` : ""}
                   </div>
                 </div>
               ))}
@@ -311,13 +432,33 @@ const addMonths = (ym, delta) => {
 
           {report.childLimits && (
             <div className="card">
-              <h3>{userRole === "Child" ? "👨‍👩‍👧 Parental Controls" : "👨‍👩‍👧 Child Controls"}</h3>
-              <p><strong>Per-transaction Limit:</strong> {Number(report.childLimits.spendingLimit) > 0 ? currency(report.childLimits.spendingLimit) : "No limit"}</p>
-              <p><strong>Monthly Budget:</strong> {Number(report.childLimits.monthlyBudget) > 0 ? currency(report.childLimits.monthlyBudget) : "No cap"}</p>
+              <h3>
+                {userRole === "Child"
+                  ? "👨‍👩‍👧 Parental Controls"
+                  : "👨‍👩‍👧 Child Controls"}
+              </h3>
+              <p>
+                <strong>Per-transaction Limit:</strong>{" "}
+                {Number(report.childLimits.spendingLimit) > 0
+                  ? currency(report.childLimits.spendingLimit)
+                  : "No limit"}
+              </p>
+              <p>
+                <strong>Monthly Budget:</strong>{" "}
+                {Number(report.childLimits.monthlyBudget) > 0
+                  ? currency(report.childLimits.monthlyBudget)
+                  : "No cap"}
+              </p>
               {Number(report.childLimits.monthlyBudget) > 0 && (
                 <>
-                  <p><strong>Spent This Month:</strong> {currency(report.childLimits.spentThisMonth)}</p>
-                  <p><strong>Remaining This Month:</strong> {currency(report.childLimits.remainingThisMonth)}</p>
+                  <p>
+                    <strong>Spent This Month:</strong>{" "}
+                    {currency(report.childLimits.spentThisMonth)}
+                  </p>
+                  <p>
+                    <strong>Remaining This Month:</strong>{" "}
+                    {currency(report.childLimits.remainingThisMonth)}
+                  </p>
                 </>
               )}
             </div>

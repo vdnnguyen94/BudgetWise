@@ -4,6 +4,7 @@ import expenseService from "../services/expenseService";
 import budgetService from "../services/budgetService";
 import billService from "../services/billService";
 import budgetCategoryService from "../services/budgetCategoryService";
+import subscriptionService from "../services/subscriptionService";
 
 // Fetch Budget
 export const useBudget = (userId) => {
@@ -107,14 +108,18 @@ export const useBudgetWarning = (userId) => {
 
   return { budget, totalExpenses, totalBills };
 };
-// Check if any upcoming bills
+// Check if any upcoming bills AND subscriptions
 export const useUpcomingBillsWarning = (userId) => {
   const hasTriggered = useRef(false);
 
   useEffect(() => {
-    const fetchBills = async () => {
+    const fetchBillsAndSubscriptions = async () => {
       try {
-        const bills = await billService.getBills(userId);
+        const [bills, subscriptions] = await Promise.all([
+          billService.getBills(userId),
+          subscriptionService.getSubscriptions(userId),
+        ]);
+
         const today = new Date();
         const threeDaysFromNow = new Date();
         threeDaysFromNow.setDate(today.getDate() + 3);
@@ -124,31 +129,68 @@ export const useUpcomingBillsWarning = (userId) => {
           return billDate >= today && billDate <= threeDaysFromNow;
         });
 
-        if (upcomingBills.length > 0 && !hasTriggered.current) {
+        const upcomingSubscriptions = subscriptions.filter((sub) => {
+          if (!sub.isActive) return false;
+          if (!sub.nextPaymentDate) return false;
+          const subDate = new Date(sub.nextPaymentDate);
+          return subDate >= today && subDate <= threeDaysFromNow;
+        });
+
+        if (
+          (upcomingBills.length > 0 || upcomingSubscriptions.length > 0) &&
+          !hasTriggered.current
+        ) {
           upcomingBills.forEach((bill) => {
-            const formattedDate = new Date(bill.date).toISOString().split("T")[0];
-            toast.info(`Upcoming Bill: ${bill.description} of $${bill.amount.toFixed(2)} is due on ${formattedDate}`, {
-              position: "top-right",
-              autoClose: 4000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-            });
+            const formattedDate = new Date(bill.date)
+              .toISOString()
+              .split("T")[0];
+            toast.info(
+              `Upcoming Bill: ${bill.description} of $${bill.amount.toFixed(
+                2
+              )} is due on ${formattedDate}`,
+              {
+                position: "top-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              }
+            );
+          });
+
+          upcomingSubscriptions.forEach((sub) => {
+            const formattedDate = new Date(sub.nextPaymentDate)
+              .toISOString()
+              .split("T")[0];
+            toast.info(
+              `Upcoming Subscription: ${sub.name} of $${Number(
+                sub.amount
+              ).toFixed(2)} is due on ${formattedDate}`,
+              {
+                position: "top-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              }
+            );
           });
 
           hasTriggered.current = true;
         }
       } catch (error) {
-        console.error("Failed to fetch bills:", error);
+        console.error("Failed to fetch bills/subscriptions:", error);
       }
     };
 
     if (userId) {
-      fetchBills();
+      fetchBillsAndSubscriptions();
     }
   }, [userId]);
 };
+
 
 // Fetch category budgets
 export const useCategoryBudgets = (budgetId) => {
