@@ -15,9 +15,10 @@ import Savings from "./pages/Savings";
 import ParentDashboard from './pages/ParentDashboard';
 import ProtectedRoute from './components/ProtectedRoutes';
 import AIChat from './pages/AIChat';
-import './App.css';
 import { isTokenExpired } from './utilities/apiInterceptor';
 import { toast } from 'react-toastify';
+
+import './App.css';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -42,6 +43,7 @@ function App() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         console.log('App mounted - Token exists:', !!token);
+        console.log('isAuthenticated:', isAuthenticated);
         
         if (token) {
             if (isTokenExpired()) {
@@ -87,14 +89,13 @@ function App() {
         localStorage.removeItem('user');
         localStorage.removeItem('userId');
         localStorage.removeItem('userRole');
-        
-        // Force reload to clear any cached data
-        window.location.href = '/';
+        window.location.reload(); // <-- important!
     };
 
     return (
         <Router>
           <Navbar isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+          {/* Replaced <Routes> block with the one below for removing data after logout*/}
           <Routes>
             <Route path="/" element={<Home />} />
     
@@ -140,42 +141,20 @@ function App() {
               </ProtectedRoute>
             }/>
     
-            <Route path="/loan" element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <Loan />
-              </ProtectedRoute>
-            }/>
-    
-            <Route path="/profile" element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <
-// @ts-ignore
-                UserPage />
-              </ProtectedRoute>
-            }/>
-    
-            <Route path="/parent-dashboard" element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <ParentDashboard />
-              </ProtectedRoute>
-            }/>
-    
-            <Route path="/user-management" element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <UserManagement />
-              </ProtectedRoute>
-            }/>
-    
-            <Route path="/shared" element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <DashboardWrapper />
-              </ProtectedRoute>
-            }/>
+            {/* Keep original routes without ProtectedRoute wrapper */}
+            <Route path="/parent-dashboard" element={<ParentDashboard />} />
+            
+            <Route path="/user" element={<UserPage setIsAuthenticated={setIsAuthenticated} />} />
+            
+            <Route path="/user-management" element={<UserManagement />} />
+            
+            <Route path="/loan" element={<Loan />} />
+            
+            {/* Dynamic route with :role parameter */}
+            <Route path="/dashboard/:role" element={<DashboardWrapper />} />
           </Routes>
         </Router>
     );
 }
 
 export default App;
-
-

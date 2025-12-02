@@ -1,111 +1,40 @@
-import { apiFetch } from '../utilities/apiInterceptor';
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-export const getExpenses = async (filters = {}) => {
-  try {
-    const { startDate, endDate, category } = filters || {};
-    
-    const params = new URLSearchParams();
-    if (startDate) params.append('startDate', startDate);
-    if (endDate) params.append('endDate', endDate);
-    if (category) params.append('category', category);
-    
-    const queryString = params.toString();
-    const endpoint = `/api/expenses${queryString ? `?${queryString}` : ''}`;
-    
-    const response = await apiFetch(endpoint);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch expenses');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error in getExpenses:', error);
-    throw error;
-  }
+const expenseService = {
+    getExpenses: async (userId, { startDate, endDate }) => {
+        // Construct the URL with query parameters for date range
+        const url = new URL(`${API_URL}/api/expenses/${userId}`);
+        
+        // Append date range parameters if they exist
+        if (startDate) url.searchParams.append("startDate", startDate);
+        if (endDate) url.searchParams.append("endDate", endDate);
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error("Failed to fetch expenses");
+        }
+        return response.json();
+    },
+    createExpense: async (userId, expenseData) => {
+        const response = await fetch(`${API_URL}/api/expenses/${userId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(expenseData),
+        });
+        return response.json();
+    },
+    updateExpense: async (userId, expenseId, updatedData) => {
+        const response = await fetch(`${API_URL}/api/expenses/${userId}/${expenseId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedData),
+        });
+        return response.json();
+    },
+    deleteExpense: async (userId, expenseId) => {
+        return fetch(`${API_URL}/api/expenses/${userId}/${expenseId}`, { method: "DELETE" });
+    },
+
 };
 
-export const createExpense = async (expenseData) => {
-  try {
-    const response = await apiFetch('/api/expenses', {
-      method: 'POST',
-      body: JSON.stringify(expenseData)
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to create expense');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error in createExpense:', error);
-    throw error;
-  }
-};
-
-export const updateExpense = async (id, expenseData) => {
-  try {
-    const response = await apiFetch(`/api/expenses/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(expenseData)
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to update expense');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error in updateExpense:', error);
-    throw error;
-  }
-};
-
-export const deleteExpense = async (id) => {
-  try {
-    const response = await apiFetch(`/api/expenses/${id}`, {
-      method: 'DELETE'
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to delete expense');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error in deleteExpense:', error);
-    throw error;
-  }
-};
-
-export const getCategoryExpenses = async (filters = {}) => {
-  try {
-    if (!filters) filters = {};
-    
-    const params = new URLSearchParams();
-    if (filters.startDate) params.append('startDate', filters.startDate);
-    if (filters.endDate) params.append('endDate', filters.endDate);
-    
-    const queryString = params.toString();
-    const endpoint = `/api/expenses/category/summary${queryString ? `?${queryString}` : ''}`;
-    
-    const response = await apiFetch(endpoint);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch category expenses');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error in getCategoryExpenses:', error);
-    throw error;
-  }
-};
-
-export default {
-  getExpenses,
-  createExpense,
-  updateExpense,
-  deleteExpense,
-  getCategoryExpenses
-};
+export default expenseService;
