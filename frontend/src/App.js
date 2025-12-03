@@ -15,35 +15,74 @@ import Savings from "./pages/Savings";
 import ParentDashboard from './pages/ParentDashboard';
 import ProtectedRoute from './components/ProtectedRoutes';
 import AIChat from './pages/AIChat';
-
-
-
+import { isTokenExpired } from './utilities/apiInterceptor';
+import { toast } from 'react-toastify';
 
 import './App.css';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
-        // Initialize state from localStorage immediately
-        return !!localStorage.getItem('token');
+        // Check both token existence AND validity
+        const token = localStorage.getItem('token');
+        if (!token) return false;
+        
+        // Check if token is expired
+        if (isTokenExpired()) {
+            // Clean up expired token
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userRole');
+            return false;
+        }
+        
+        return true;
     });
 
-    // Check localStorage for existing login session on mount
+    // Check token validity on mount and periodically
     useEffect(() => {
         const token = localStorage.getItem('token');
         console.log('App mounted - Token exists:', !!token);
         console.log('isAuthenticated:', isAuthenticated);
+        
         if (token) {
-            setIsAuthenticated(true);
+            if (isTokenExpired()) {
+                console.log('🚨 Token expired on mount - logging out');
+                handleLogout();
+                toast.error('Your session has expired. Please login again.');
+            } else {
+                setIsAuthenticated(true);
+                console.log('✅ Token valid');
+            }
         } else {
             setIsAuthenticated(false);
         }
+
+        // Listen for token expiration events from API calls
+        const handleTokenExpiredEvent = () => {
+            console.log('🚨 Token expired event received');
+            toast.error('Your session has expired. Please login again.');
+            handleLogout();
+        };
+
+        window.addEventListener('token-expired', handleTokenExpiredEvent);
+
+        // Check token expiration every 5 minutes
+        const intervalId = setInterval(() => {
+            const token = localStorage.getItem('token');
+            if (token && isTokenExpired()) {
+                console.log('🚨 Token expired (periodic check) - logging out');
+                toast.warning('Your session has expired. Please login again.');
+                handleLogout();
+            }
+        }, 5 * 60 * 1000); // Check every 5 minutes
+
+        return () => {
+            window.removeEventListener('token-expired', handleTokenExpiredEvent);
+            clearInterval(intervalId);
+        };
     }, []);
 
-   // const handleLogout = () => {
-     //   setIsAuthenticated(false);
-       // localStorage.removeItem('token');
-        //localStorage.removeItem('user');
-    //};
     const handleLogout = () => {
         setIsAuthenticated(false);
         localStorage.removeItem('token');
@@ -95,21 +134,27 @@ function App() {
                 <MonthlyReport />
               </ProtectedRoute>
             }/>
+            
             <Route path="/ai-chat" element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <AIChat />
+                <AIChat />
               </ProtectedRoute>
             }/>
     
+            {/* Keep original routes without ProtectedRoute wrapper */}
             <Route path="/parent-dashboard" element={<ParentDashboard />} />
-    
+            
             <Route path="/user" element={<UserPage setIsAuthenticated={setIsAuthenticated} />} />
+            
             <Route path="/user-management" element={<UserManagement />} />
+            
             <Route path="/loan" element={<Loan />} />
+            
+            {/* Dynamic route with :role parameter */}
             <Route path="/dashboard/:role" element={<DashboardWrapper />} />
           </Routes>
         </Router>
-      );
-    }
+    );
+}
 
 export default App;
