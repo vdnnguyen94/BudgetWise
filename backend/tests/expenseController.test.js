@@ -3,6 +3,7 @@ import { jest } from '@jest/globals';
 import { createExpense, getExpenses, deleteExpense } from '../controllers/expenseController.js';
 import Expense from '../models/Expense.js';
 import BudgetCategory from '../models/BudgetCategory.js';
+import User from '../models/user.js';
 
 describe('Expense Controller Tests', () => {
   describe('createExpense', () => {
@@ -40,23 +41,38 @@ describe('Expense Controller Tests', () => {
         params: { userId: 'u1' }
       };
 
-      // Mocking
-      jest.spyOn(BudgetCategory, 'findById').mockResolvedValue(true);
-      const saveMock = jest.spyOn(Expense.prototype, 'save').mockResolvedValue({});
-
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn()
       };
 
+      // Mock BudgetCategory
+      jest.spyOn(BudgetCategory, 'findById').mockResolvedValue(true);
+      
+      // Mock User with select chain
+      // @ts-ignore
+      const mockSelect = jest.fn().mockResolvedValue({
+        role: 'Parent',
+        spendingLimit: 0,
+        monthlyBudget: 0
+      });
+      // @ts-ignore
+      jest.spyOn(User, 'findById').mockReturnValue({ select: mockSelect });
+      
+      // Mock Expense save
+      const saveMock = jest.spyOn(Expense.prototype, 'save').mockResolvedValue({});
+
       await createExpense(req, res);
 
       expect(BudgetCategory.findById).toHaveBeenCalledWith('cat123');
+      expect(User.findById).toHaveBeenCalledWith('u1');
       expect(saveMock).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalled();
 
+      // Cleanup
       saveMock.mockRestore();
+      jest.restoreAllMocks();
     });
   });
 
@@ -73,6 +89,7 @@ describe('Expense Controller Tests', () => {
   
       const mockSelect = jest.fn().mockReturnValue(mockExpenses);
       const mockPopulate = jest.fn().mockReturnValue({ select: mockSelect });
+      // @ts-ignore
       const mockFind = jest.spyOn(Expense, 'find').mockReturnValue({ populate: mockPopulate });
   
       const req = {
@@ -94,10 +111,10 @@ describe('Expense Controller Tests', () => {
         { amount: 100, description: 'Groceries', paymentMethod: 'Cash' },
         { amount: 200, description: 'Books', paymentMethod: 'Debit Card' }
       ]);
+      
+      jest.restoreAllMocks();
     });
   });
-  
-  
 
   describe('deleteExpense', () => {
     it('should delete expense and return success message', async () => {
@@ -114,6 +131,8 @@ describe('Expense Controller Tests', () => {
 
       expect(Expense.findOneAndDelete).toHaveBeenCalledWith({ _id: 'e1', userId: 'u1' });
       expect(res.json).toHaveBeenCalledWith({ message: 'Expense deleted successfully' });
+      
+      jest.restoreAllMocks();
     });
   });
 });
