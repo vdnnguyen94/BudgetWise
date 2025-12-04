@@ -5,7 +5,7 @@ import budgetService from "../services/budgetService";
 import billService from "../services/billService";
 import budgetCategoryService from "../services/budgetCategoryService";
 import subscriptionService from "../services/subscriptionService";
-
+import alertService from "./services/alertService";
 // Fetch Budget
 export const useBudget = (userId) => {
   const [budget, setBudget] = useState(null);
@@ -91,8 +91,15 @@ export const useBudgetWarning = (userId) => {
     const totalSpent = totalExpenses + totalBills;
 
     if (totalSpent > budget) {
+      hasTriggered.current = true; // prevent duplicate alerts
+
+      const msg = `Warning! Your total spending ($${totalSpent.toFixed(
+        2
+      )}) exceeds your budget ($${budget.toFixed(2)})`;
+
+      // 1) Show the existing toast (frontend-only)
       setTimeout(() => {
-        toast.warn(`Warning! Your total spending ($${totalSpent.toFixed(2)}) exceeds your budget ($${budget.toFixed(2)})`, {
+        toast.warn(msg, {
           position: "top-right",
           autoClose: 4000,
           hideProgressBar: false,
@@ -102,12 +109,27 @@ export const useBudgetWarning = (userId) => {
         });
       }, 500);
 
-      hasTriggered.current = true;
+      // 2) Also create a backend Alert
+      (async () => {
+        try {
+          await alertService.createAlert(userId, {
+            type: "BUDGET_OVERALL_EXCEEDED",
+            title: "Total budget exceeded",
+            message: msg,
+            severity: "warning",
+            amount: totalSpent,
+            limit: budget,
+          });
+        } catch (e) {
+          console.error("Failed to persist budget alert:", e);
+        }
+      })();
     }
-  }, [budget, totalExpenses, totalBills]);
+  }, [budget, totalExpenses, totalBills, userId]);
 
   return { budget, totalExpenses, totalBills };
 };
+
 // Check if any upcoming bills AND subscriptions
 export const useUpcomingBillsWarning = (userId) => {
   const hasTriggered = useRef(false);
